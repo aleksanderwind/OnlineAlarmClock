@@ -1,36 +1,35 @@
-#include <JsonListener.h>
-#include <JsonStreamingParser.h>
-#include <ArduinoJson.h>
-#include <SimpleDHT.h>
-#include <DHT.h>
-#define DHTTYPE DHT11
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFiMulti.h> // Include the Wi-Fi-Multi library
 #include <ESP8266WebServer.h> // Include the WebServer library
-
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 ESP8266WiFiMulti wifiMulti;
 
 // Create an instance of the server
 ESP8266WebServer server(80);
 
-const int DHTPin = 5;
-DHT dht(DHTPin, DHTTYPE);
-
 const int led = 2;
 const int led2 = 16;
 
 WiFiClient client;
 
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org");
+
+//Week Days
+String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
 void handleRoot();
 void handleLED();
+void handleTime();
 void handleNotFound();
 
 void setup()
 {
-  dht.begin();
   Serial.begin(115200);
   delay(10);
   pinMode(led, OUTPUT);
@@ -39,9 +38,8 @@ void setup()
   digitalWrite(led2, 1);
 
   // Connect to WiFi network
-  Serial.println();
-  wifiMulti.addAP("IoTFotonik", ""); // add Wi-Fi networks youwant to connect to
-  wifiMulti.addAP("Hot MILF nearby", "14151415");
+  Serial.println(); 
+  wifiMulti.addAP("Hot MILF nearby", "14151415"); // add Wi-Fi networks youwant to connect to
   Serial.println();
   Serial.print("Connecting ...");
   //WiFi.begin(ssid, password);
@@ -56,9 +54,13 @@ void setup()
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
+  // Initialize a NTPClient to get time
+  timeClient.begin();
+  timeClient.setTimeOffset(0);
+
   server.on("/", HTTP_GET, handleRoot);
   server.on("/LED", HTTP_POST, handleLED);
-  server.on("/TEMP", HTTP_GET, handleTEMP);
+  server.on("/TIME", HTTP_POST, handleTime);
   server.onNotFound(handleNotFound);
 
   // Start the server
@@ -71,44 +73,47 @@ void loop()
   // Check if a client has connected
   server.handleClient();
 }
+
 void handleRoot()
-{ // When URI / is  requested, send a web page with a button to toggle the LED
-  char * htmlcode = "<html><head><title>Internet of Things - Demonstration</title><meta charset=\"utf-8\" \/> \</head><body><h1>Webserver i 34302 Introduktion til Cyberteknologi</h1> \<p>Internet of Things (IoT) er \"tingenes Internet\" - dagligdags ting kommer på nettet og får ny værdi. Det kan løse mange udfordringer.</p> \<p>Her kommunikerer du med en webserver på en lille microcontroller af typen Arduino, som i dette tilfælde styrer en digital udgang, som du så igen kan bruge til at styre en lampe, en ventilator, tænde for varmen eller hvad du lyster</p> \<p>Klik på nedenstående knap for at tænde eller slukke LED på port D2</p> \<form action=\"/LED\" method=\"POST\" ><input type=\"submit\" value=\"Skift tilstand på LED\" style=\"width:500px; height:100px; font-size:24px\"></form> \<p>Med en Arduino ESP8266 kan du lave et hav af sjove projekter</p> \<p>Nu skal du udvide denne webserver med mere funktionalitet</p> \<p>F.eks. skal du opbygge funktionalitet således at nedenstående knap fører dig til en side som viser temperaturer, målte og hentede.</p> \<form action=\"/TEMP\" method=\"GET\" ><input type=\"submit\" value=\"Temperaturinformation\" style=\"width:500px; height:100px; font-size:24px\"></form> \</body></html>";
+{ 
+  // When URI / is  requested, send a web page with a button to toggle the LED
+  char * htmlcode = "<html><head><title>Website - Generic</title><meta charset=\"utf-8\" \/> \</head><body><h1>Generic Website</h1> \<p>Press the button to turn the LED's ON/OFF</p> \<form action=\"/LED\" method=\"POST\" ><input type=\"submit\" value=\"LED ON/OFF\" style=\"width:500px; height:100px; font-size:24px\"></form> \<form action=\"/TIME\" method=\"POST\" ><input type=\"submit\" value=\"Get current time and date\" style=\"width:500px; height:100px; font-size:24px\"></form> \</body></html>";
   server.send(200, "text/html", htmlcode);
 }
 
 void handleLED()
-{ // If a POST request  is made to URI / LED
+{ 
+  // If a POST request  is made to URI / LED
   digitalWrite(led, !digitalRead(led)); // Change the state  of the LED
   digitalWrite(led2, !digitalRead(led2));
   server.sendHeader("Location", "/"); // Add a header to  respond with a new location for the browser to go to the home  page again
   server.send(303); // Send it back to  the browser with an HTTP status 303 (See Other) to redirect
 }
 
-void handleTEMP()
+void handleTime()
 {
-  //Char array that will be sent to the client is declared
-  char str[500];
-  const size_t capacity = 2048;
-  const String endpoint =
-    "http://api.openweathermap.org/data/2.5/weather?q=Kongens%20Lyngby,dk";
-  DynamicJsonDocument doc(capacity);
-  HTTPClient http;
-  http.begin(client, endpoint +
-             "&APPID=42c732ff5116bc7cbcd147c4b007dfc2&units=metric");
-  int httpCode = http.GET(); //Make the request
-  String payload = http.getString();
-  deserializeJson(doc, payload);
-  JsonObject main = doc["main"];
-  float main_temp = main["temp"];
-  float main_humid = main["humidity"];
+  timeClient.update();
 
-  //The three variables for temperature and humidity are  declared, and initialized as being values of the input received  by the DHT
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
+  time_t epochTime = timeClient.getEpochTime();
+  timeClient.setTimeOffset(3600);
 
-  //The values of the floats are inserted into the HTML code by use of sprintf
-  sprintf(str,"<html><head><title>Temperaturinformation</title><meta charset=\"utf-8\" \/> \</head><body><h1>Vejrinformation:</h1> \<p>Temperatur indenfor: %.2f og Fugtighed indenfor: %.2f</p>\<p>Temperatur udenfor: %.2f og Fugtighed udenfor: %.2f</p>\</body></html>", t, h, main_temp, main_humid);
+  int currentHour = timeClient.getHours();
+  int currentMinute = timeClient.getMinutes();
+  int currentSecond = timeClient.getSeconds(); 
+  String wkDy = weekDays[timeClient.getDay()]; 
+
+  //Get a time structure
+  struct tm *ptm = gmtime ((time_t *)&epochTime); 
+
+  int monthDay = ptm->tm_mday;
+  int currentMonth = ptm->tm_mon+1;
+  int currentYear = ptm->tm_year+1900;
+
+  char weekDay[10];
+  wkDy.toCharArray(weekDay, wkDy.length()+1);
+
+  char str[256];
+  sprintf(str,"<html><head><title>Time Information</title><meta charset=\"utf-8\" \/> \</head><body><h1>Date/time:</h1> \<p>Time: %d:%d:%d</p>\<p>Date: %s, %d/%d/%d</p>\<p>Time retrieved from <a href=\"pool.ntp.org\">pool.ntp.org</a></p>\<img src=\"https://media.tenor.com/iRRAJt3llV4AAAAC/its-time-to-stop-stop.gif\">\</body></html>", currentHour, currentMinute, currentSecond, weekDay, monthDay, currentMonth, currentYear);
   server.send(200, "text/html", str);
 }
 
