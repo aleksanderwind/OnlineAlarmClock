@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-const static byte charTable[] PROGMEM = {
+const static byte asciiTableRef[] PROGMEM = {
   B00000001, B10000000, B00000000, B01111110, B00110000, B01101101, B01111001, B00110011, B01011011, B01011111, B01110000,
   B01111111, B01111011, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000,
   B00000000, B01110111, B00011111, B00001101, B00111101, B01001111, B01000111, B01111011,
@@ -22,10 +22,8 @@ private:
 
   int CS;
 
-  int address;
-
 public:
-  SegmentDriver(int MOSI, int CLK, int CS, int ADDRESS);
+  SegmentDriver(int MOSI, int CLK, int CS);
   int turnOn();
   int turnOff();
   int setBrightness(int value);
