@@ -56,7 +56,9 @@ int SegmentDriver::turnOff() {
 }
 
 void SegmentDriver::clear() {
+  for (int i = 1; i < DISPLAY_LENGTH + 1; i++) {
     setString("        ");
+  }
 }
 
 int SegmentDriver::setBrightness(int value) {
@@ -79,7 +81,7 @@ int SegmentDriver::setChar(int place, char chr) {
 
   byte val = (byte)chr;
 
-  // Convert to upper case, if the char is lower case.  
+  // Convert to upper case, if the char is lower case.
   if (val >= 97 && val <= 122) {
     val -= 32;
   }
@@ -89,13 +91,14 @@ int SegmentDriver::setChar(int place, char chr) {
   if (val < 0 || val > 95) {
     val = 2;
   }
-  
+
   return sendSPI(pgm_read_byte_near(charTable + val), place + 1);
 }
 
 int SegmentDriver::setString(String string) {
-  
-  for (int i = 0; i < sizeof(string) - 1; i++) {
+  int len = (sizeof(string) > 9) ? 8 : sizeof(string) - 1;
+
+  for (int i = 0; i < len; i++) {
     setChar((DISPLAY_LENGTH - 1) - i, string[i]);
   }
   return 0;
