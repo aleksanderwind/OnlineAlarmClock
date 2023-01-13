@@ -60,13 +60,13 @@ const char index_html[] PROGMEM = R"rawliteral(
     }
 
     input.set[type="submit"]{
-        float: left;
         height: 25px;
         width: fit-content;
         background-color: #000000;
         color: white;
         text-align: center;
         margin-top: 4px;
+        margin-left: 10px;
     }
 
     input[type="color"] {
@@ -83,23 +83,33 @@ const char index_html[] PROGMEM = R"rawliteral(
         margin-right: 10px;
     }
 
+    input[type="time"]{
+        height: 21px;
+        width: fit-content;
+        background-color: aqua;
+        margin-left: 10px;
+    }
+
+    input[type="date"]{
+        height: 21px;
+        width: fit-content;
+        background-color: aqua;
+        margin-left: 10px;
+    }
+
 </style>
 
 <body> 
-    <p> Select mode or turn LED strip off: </p>
     <div>
         <form action="/mode1">
-            <!--<label for = "mode1"> Activate mode 1 </label><br> -->
             <input class = mode1 type="submit" value = "Mode 1">
         </form>
     
         <form action="/mode2">
-            <!--<label for = "mode2"> Activate mode 2 </label><br> -->
             <input class = mode2 type="submit" value = "Mode 2">
         </form>
     
         <form action="/off">
-            <!--<label for = "off"> Turn off </label><br> -->
             <input class = off type="submit" value = "Off"><br><br>
         </form>
     </div>
@@ -109,8 +119,18 @@ const char index_html[] PROGMEM = R"rawliteral(
         <div id="color-picker-wrapper">
             <input type="color" value="#ff0000" id="staticColor" name="staticColor">
         </div>
-        <input class = set type="submit" value="Set"> 
+        <input class = set type="submit" value = "Set color"> <br><br>
     </form>
+
+    <div>
+        <form action = "/setAlarm">
+            <label for="alarmDate"> Select date for alarm: </label>
+            <input type="date" id="alarmDate" name="alarmDate"><br>
+            <label for="alarmTime"> Select time for alarm: </label>
+            <input type="time" id="alarmTime" name="alarmTime">
+            <input class = set type="submit" value = "Set alarm">
+        </form>
+    </div>
 
     <script>
         var color_picker = document.getElementById("staticColor");
@@ -123,13 +143,14 @@ const char index_html[] PROGMEM = R"rawliteral(
     
 </body>
 
-</html>   )rawliteral";
+</html>      )rawliteral";
 
 void handleRoot();  
 void handleMode1();
 void handleMode2();
 void handleOff();  
 void handleStaticColor();
+void handleSetAlarm();
 void handleNotFound();
 //void wifiINIT(String ssid, String password);
 
@@ -146,6 +167,7 @@ void setup() {
   server.on("/mode2", HTTP_GET, handleMode2);
   server.on("/off", HTTP_GET, handleOff);
   server.on("/setStaticColor", handleStaticColor);
+  server.on("/setAlarm", handleSetAlarm);
   server.onNotFound(handleNotFound);
     
   // Start the server
@@ -156,7 +178,7 @@ void setup() {
 void loop() {
   // Check if a client has connected
   server.handleClient();
-  FastLED.show();
+  //FastLED.show();
 }
 
 void wifiINIT(const char* ssid, const char* password){
@@ -293,6 +315,25 @@ void handleStaticColor(){
   setLEDStripHEX(colorValue);
   delay(10);
   //FastLED.show();
+  server.sendHeader("Location","/");
+  server.send(303);  
+}
+
+void handleSetAlarm(){
+  String timeNotFormated = server.arg("alarmTime");
+  String dateNotFormated = server.arg("alarmDate");
+  Serial.println(dateNotFormated);
+  Serial.println(timeNotFormated);
+  int hour = timeNotFormated.substring(0,2).toInt();
+  int minute = timeNotFormated.substring(3,5).toInt();
+  int day = dateNotFormated.substring(8,10).toInt();
+  int month = dateNotFormated.substring(5,7).toInt();
+  int year = dateNotFormated.substring(0,4).toInt();
+  Serial.println(year, DEC);
+  Serial.println(month, DEC);
+  Serial.println(day, DEC);
+  Serial.println(hour, DEC);
+  Serial.println(minute, DEC);
   server.sendHeader("Location","/");
   server.send(303);  
 }
