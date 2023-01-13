@@ -1,16 +1,19 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-#include <ESP8266WiFiMulti.h>   // Include the Wi-Fi-Multi library
-#include <ESP8266WebServer.h>   // Include the WebServer library
-#include <ESP8266mDNS.h>        // Include the mDNS library
-#include <FastLED.h>
+#include <ESP8266WiFiMulti.h>  // Include the Wi-Fi-Multi library
+#include <ESP8266WebServer.h>  // Include the WebServer library
+#include <ESP8266mDNS.h>       // Include the mDNS library
+#include <Adafruit_NeoPixel.h>
 
-#define LED_PIN     14
-#define NUM_LEDS    2
-#define LED_TYPE    WS2811
+#define LED_PIN 14
+#define NUM_LEDS 5
+#define LED_TYPE WS2812B
 #define COLOR_ORDER GRB
 
-CRGB leds[NUM_LEDS];
+#define STATUSCODE_OK 200
+#define STATUSCODE_SEEOTHER 303
+
+Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB);
 
 ESP8266WiFiMulti wifiMulti;
 // Create an instance of the server
@@ -145,22 +148,24 @@ const char index_html[] PROGMEM = R"rawliteral(
 
 </html>      )rawliteral";
 
-void handleRoot();  
+void handleRoot();
 void handleMode1();
 void handleMode2();
-void handleOff();  
+void handleOff();
 void handleStaticColor();
 void handleSetAlarm();
 void handleNotFound();
-//void wifiINIT(String ssid, String password);
+void wifiINIT(String ssid, String password);
+void setLEDStrip(int r, int g, int b);
+void setLEDStripHex(long hex);
 
 void setup() {
   Serial.begin(115200);
   delay(10);
 
-  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
-  
-  wifiINIT("AndroidAP", "12345689");
+  pixels.begin();
+  setLEDStrip(0,0,0);
+  wifiINIT("Jesper", "12345677");
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/mode1", HTTP_GET, handleMode1);
@@ -169,28 +174,28 @@ void setup() {
   server.on("/setStaticColor", handleStaticColor);
   server.on("/setAlarm", handleSetAlarm);
   server.onNotFound(handleNotFound);
-    
+
   // Start the server
   server.begin();
-  Serial.println("Server started"); 
+  Serial.println("Server started");
+  pixels.clear();
 }
 
 void loop() {
   // Check if a client has connected
   server.handleClient();
-  //FastLED.show();
 }
 
-void wifiINIT(const char* ssid, const char* password){
-   // Connect to WiFi network
+void wifiINIT(const char* ssid, const char* password) {
+  // Connect to WiFi network
   Serial.println();
   wifiMulti.addAP(ssid, password);  // add Wi-Fi networks you want to connect to
-  //wifiMulti.addAP("<ssid2>", "<password>");  
-  
+  //wifiMulti.addAP("<ssid2>", "<password>");
+
   Serial.println();
   Serial.print("Connecting ...");
   //WiFi.begin(ssid, password);
- 
+
   while (wifiMulti.run() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -201,14 +206,14 @@ void wifiINIT(const char* ssid, const char* password){
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-  if (MDNS.begin("iot")) {              // Start the mDNS responder for esp8266.local
+  if (MDNS.begin("iot")) {  // Start the mDNS responder for esp8266.local
     Serial.println("mDNS responder started");
   } else {
     Serial.println("Error setting up MDNS responder!");
   }
 }
 
-void handleRoot(){
+void handleRoot() {
   server.send(200, "text/html", index_html);
 }
 
@@ -240,7 +245,7 @@ long hexToDec(String hexString) {
   return decValue;
 }
 
-void setLEDStrip(int r, int g, int b){
+void setLEDStrip(int r, int g, int b) {
   /*
    * Description
    * Takes three integers r, g and b and sets the led strip to the color specified by that three numbers.
@@ -254,13 +259,13 @@ void setLEDStrip(int r, int g, int b){
    * Sets the color of the LED strip to red.
   */
 
-  for(int i = 0; i < NUM_LEDS; i++){
-    leds[i].setRGB(r,g,b);
+  for (int i = 0; i < NUM_LEDS; i++) {
+    pixels.setPixelColor(i, pixels.Color(r, g, b));
   }
-  
+    pixels.show();
 }
 
-void setLEDStripHEX(long colorValue){
+void setLEDStripHEX(long colorValue) {
   /*
    * Description
    * Takes a long value at sets the RGB strip to that color.
@@ -273,36 +278,39 @@ void setLEDStripHEX(long colorValue){
    * 
    * Sets the color of the LED strip to red.
   */
-  for(int i = 0; i < NUM_LEDS; i++){
-    leds[i] = colorValue;
-  }
+
+  int r, g, b;
+  r = colorValue >> 16;
+  g = (colorValue & 0x00FF00) >> 8;
+  b = colorValue & 0xFF;
+  setLEDStrip(r,g,b);
 }
 
-void handleMode1(){
+void handleMode1() {
   setLEDStripHEX(0xFF0000);
   delay(10);
   //FastLED.show();
-  server.sendHeader("Location","/");
-  server.send(303);  
+  server.sendHeader("Location", "/");
+  server.send(STATUSCODE_SEEOTHER);
 }
 
-void handleMode2(){
+void handleMode2() {
   setLEDStripHEX(0x0000FF);
   delay(10);
   //FastLED.show();
-  server.sendHeader("Location","/");
-  server.send(303);
+  server.sendHeader("Location", "/");
+  server.send(STATUSCODE_SEEOTHER);
 }
 
-void handleOff(){
+void handleOff() {
   setLEDStripHEX(0x000000);
   delay(40);
   //FastLED.show();
-  server.sendHeader("Location","/");
-  server.send(303);  
+  server.sendHeader("Location", "/");
+  server.send(STATUSCODE_SEEOTHER);
 }
 
-void handleStaticColor(){
+void handleStaticColor() {
   String staticColor = server.arg("staticColor").substring(1).c_str();
   long colorValue = hexToDec(staticColor);
   Serial.println(staticColor);
@@ -315,8 +323,8 @@ void handleStaticColor(){
   setLEDStripHEX(colorValue);
   delay(10);
   //FastLED.show();
-  server.sendHeader("Location","/");
-  server.send(303);  
+  server.sendHeader("Location", "/");
+  server.send(STATUSCODE_SEEOTHER);
 }
 
 void handleSetAlarm(){
