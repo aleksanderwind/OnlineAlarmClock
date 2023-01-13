@@ -18,6 +18,8 @@ String CURRENT_COLOR = "#FFFFFF";
 String timeNotFormated = "";
 String dateNotFormated = "";
 
+int currentSong = 0;
+
 Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB);
 
 ESP8266WiFiMulti wifiMulti;
@@ -36,6 +38,7 @@ void handleSetWakeUpSong();
 void handleNotFound();
 void getCurrentColor();
 void getAlarmDateAndTime();
+void getCurrentSong();
 void wifiINIT(String ssid, String password);
 void setLEDStrip(int r, int g, int b);
 void setLEDStripHex(long hex);
@@ -57,6 +60,7 @@ void setup() {
   server.on("/getColor", getCurrentColor);
   server.on("/getAlarmDateAndTime",getAlarmDateAndTime);
   server.on("/setWakeUpSong", HTTP_GET, handleSetWakeUpSong);
+  server.on("/getCurrentWakeUpSong", getCurrentSong);
   server.onNotFound(handleNotFound);
 
   // Start the server
@@ -240,12 +244,16 @@ void getCurrentColor() {
 
 void getAlarmDateAndTime(){
   server.send(STATUSCODE_OK, "text/plain", dateNotFormated + "#" + timeNotFormated);
-  Serial.println(dateNotFormated + "#" + timeNotFormated);
+  //Serial.println(dateNotFormated + "#" + timeNotFormated);
+}
+
+void getCurrentSong(){
+  server.send(STATUSCODE_OK, "text/plain", String(currentSong));
 }
 
 void handleSetWakeUpSong(){
-  int songID = server.arg("songID").toInt();
-  Serial.println(songID);
+  currentSong = server.arg("songID").toInt();
+  Serial.println(currentSong);
   server.sendHeader("Location","/");
   server.send(303);
 }

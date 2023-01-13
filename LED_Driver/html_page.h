@@ -87,7 +87,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 
 </style>
 
-<body> 
+<body>
     <div>
         <form action="/mode1">
             <input class = mode1 type="submit" value = "Mode 1">
@@ -182,6 +182,34 @@ const char index_html[] PROGMEM = R"rawliteral(
             xhr.open("GET", "/getAlarmDateAndTime", true);
             xhr.send();
         }
+
+        window.addEventListener('load', getCurrentWakeUpSong);
+
+        function getCurrentWakeUpSong(){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200) {
+                var val = this.responseText;
+                console.log(val)
+                if(val == "1"){
+                    document.getElementById("song1").checked = true;
+                }
+                if(val == "2"){
+                    document.getElementById("song2").checked = true;
+                }
+                if(val == "3"){
+                    document.getElementById("song3").checked = true;
+                }
+                if(val == "4"){
+                    document.getElementById("song4").checked = true;
+                }
+                }
+            };
+            xhr.open("GET", "/getCurrentWakeUpSong", true);
+            xhr.send();
+        }
+
+
     </script>
     
 </body>
