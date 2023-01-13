@@ -12,36 +12,34 @@
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
 
+void connectToWifi(String ssid, String password, ESP8266WiFiMulti* wifiMulti);
 
-class IOTSERVER {
-private:
+void initServer(ESP8266WebServer* server, LED* strip);
 
+void startServer();
 
-public:
-  String SSID;
-
-  String PASSWORD;
-
-  ESP8266WiFiMulti wifiMulti;
-
-  IOTSERVER(String ssid, String password, ESP8266WebServer* server, LED* strip);
-
-  void begin();
-
-  void handleClient();
-
-  void connectToWifi();
-};
+void handleClients();
 
 void handleRoot();
+
 void handleMode1();
+
 void handleMode2();
+
 void handleOff();
+
 void handleStaticColor();
+
 void handleSetAlarm();
+
 void handleSetWakeUpSong();
+
 void handleNotFound();
+
 void getCurrentColor();
+
 void getAlarmDateAndTime();
+
 void getCurrentSong();
+
 #endif  // iotserver

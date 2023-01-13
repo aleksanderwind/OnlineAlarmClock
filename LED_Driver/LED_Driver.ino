@@ -18,21 +18,22 @@ String PASSWORD = "Kniv7holt";
 // Create an instance of the server
 ESP8266WebServer webserver(80);
 
+// Create an instance of the wifiMulti
 ESP8266WiFiMulti wifiMulti;
-
-// Create custom IOTSERVER object
-IOTSERVER iotserver(SSID, PASSWORD, &webserver, &led_strip);
-
 
 void setup() {
   Serial.begin(115200);
   delay(10);
   Serial.println();
 
-  iotserver.connectToWifi();
+  // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
+  initServer(&webserver, &led_strip);
 
-  // Start the server
-  iotserver.begin();
+  // Connect to the wifi using the set SSID and PASSWORD
+  connectToWifi(SSID, PASSWORD, &wifiMulti);
+
+  // Start the IoT server
+  startServer();
   Serial.println("Server started");
 
   led_strip.clear();
@@ -40,6 +41,5 @@ void setup() {
 
 void loop() {
   // Check if a client has connected
-  iotserver.handleClient();
-  delay(100);
+  handleClients();
 }

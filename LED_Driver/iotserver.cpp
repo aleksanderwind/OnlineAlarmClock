@@ -11,11 +11,7 @@ String dateNotFormated = "";
 
 int currentSong = 0;
 
-IOTSERVER::IOTSERVER(String ssid, String password, ESP8266WebServer* server, LED* strip) {
-  SSID = ssid;
-
-  PASSWORD = password;
-
+void initServer(ESP8266WebServer* server, LED* strip) {
   SERVER = server;
 
   LED_STRIP = strip;
@@ -43,24 +39,24 @@ IOTSERVER::IOTSERVER(String ssid, String password, ESP8266WebServer* server, LED
   SERVER->onNotFound(handleNotFound);
 }
 
-void IOTSERVER::begin() {
+void startServer() {
   SERVER->begin();
 }
 
-void IOTSERVER::handleClient() {
+void handleClients() {
   SERVER->handleClient();
 }
 
-void IOTSERVER::connectToWifi() {
+void connectToWifi(String SSID, String PASSWORD, ESP8266WiFiMulti* wifiMulti) {
 
   // Connect to WiFi network
   Serial.println();
-  wifiMulti.addAP(SSID.c_str(), PASSWORD.c_str());  // add Wi-Fi networks you want to connect to
+  wifiMulti->addAP(SSID.c_str(), PASSWORD.c_str());  // add Wi-Fi networks you want to connect to
 
   Serial.println();
   Serial.print("Connecting ...");
 
-  while (wifiMulti.run() != WL_CONNECTED) {
+  while (wifiMulti->run() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
