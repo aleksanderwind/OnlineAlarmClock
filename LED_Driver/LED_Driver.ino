@@ -13,6 +13,8 @@
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
 
+String CURRENT_COLOR = "#0000FF";
+
 Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB);
 
 ESP8266WiFiMulti wifiMulti;
@@ -136,6 +138,22 @@ const char index_html[] PROGMEM = R"rawliteral(
     </div>
 
     <script>
+        window.addEventListener('load', getReadings);
+
+        function getReadings(){
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              var val = this.responseText;
+              console.log(val);
+              document.getElementById('staticColor').value = val;
+              document.getElementById('color-picker-wrapper').style.backgroundColor = val;
+            }
+          }; 
+          xhr.open("GET", "/sensor", true);
+          xhr.send();
+        }
+
         var color_picker = document.getElementById("staticColor");
         var color_picker_wrapper = document.getElementById("color-picker-wrapper");
         color_picker.onchange = function () {
@@ -155,6 +173,7 @@ void handleOff();
 void handleStaticColor();
 void handleSetAlarm();
 void handleNotFound();
+void handleSensor();
 void wifiINIT(String ssid, String password);
 void setLEDStrip(int r, int g, int b);
 void setLEDStripHex(long hex);
@@ -173,6 +192,7 @@ void setup() {
   server.on("/off", HTTP_GET, handleOff);
   server.on("/setStaticColor", handleStaticColor);
   server.on("/setAlarm", handleSetAlarm);
+  server.on("/sensor", handleSensor);
   server.onNotFound(handleNotFound);
 
   // Start the server
@@ -259,6 +279,8 @@ void setLEDStrip(int r, int g, int b) {
    * Sets the color of the LED strip to red.
   */
 
+  //CURRENT_COLOR = "#" + String(r, HEX) + String(g, HEX) + String(b, HEX);
+
   for (int i = 0; i < NUM_LEDS; i++) {
     pixels.setPixelColor(i, pixels.Color(r, g, b));
   }
@@ -311,7 +333,9 @@ void handleOff() {
 }
 
 void handleStaticColor() {
-  String staticColor = server.arg("staticColor").substring(1).c_str();
+  String incomingHex = server.arg("staticColor");
+  CURRENT_COLOR = incomingHex;
+  String staticColor = incomingHex.substring(1).c_str();
   long colorValue = hexToDec(staticColor);
   Serial.println(staticColor);
   Serial.println(colorValue, HEX);
@@ -344,6 +368,10 @@ void handleSetAlarm(){
   Serial.println(minute, DEC);
   server.sendHeader("Location","/");
   server.send(303);  
+}
+
+void handleSensor() {
+  server.send(STATUSCODE_OK, "text/plain", String(CURRENT_COLOR));
 }
 
 void handleNotFound(){
