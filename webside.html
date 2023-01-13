@@ -110,9 +110,22 @@
             <input type="date" id="alarmDate" name="alarmDate"><br>
             <label for="alarmTime"> Select time for alarm: </label>
             <input type="time" id="alarmTime" name="alarmTime">
-            <input class = set type="submit" value = "Set alarm">
+            <input class = set type="submit" value = "Set alarm"><br>
         </form>
     </div>
+
+    <form action="/setWakeUpSong">
+        <p>Choose wakeup song: </p>
+        <input type="radio" id="song1" name="songID" value="1">
+        <label for="song1">Song 1</label>
+        <input type="radio" id="song2" name="songID" value="2">
+        <label for="song2">Song 2</label>
+        <input type="radio" id="song3" name="songID" value="3">
+        <label for="song3">Song 3</label>
+        <input type="radio" id="song4" name="songID" value="4">
+        <label for="song4">Song 4</label>
+        <input class="set" type="submit" value="Set song">
+    </form>
 
     <script>
         var color_picker = document.getElementById("staticColor");

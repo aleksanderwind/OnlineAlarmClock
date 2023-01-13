@@ -13,7 +13,7 @@
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
 
-String CURRENT_COLOR = "#0000FF";
+String CURRENT_COLOR = "#FFFFFF";
 
 Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB);
 
@@ -133,9 +133,22 @@ const char index_html[] PROGMEM = R"rawliteral(
             <input type="date" id="alarmDate" name="alarmDate"><br>
             <label for="alarmTime"> Select time for alarm: </label>
             <input type="time" id="alarmTime" name="alarmTime">
-            <input class = set type="submit" value = "Set alarm">
+            <input class = set type="submit" value = "Set alarm"><br>
         </form>
     </div>
+
+    <form action="/setWakeUpSong">
+        <p>Choose wakeup song: </p>
+        <input type="radio" id="song1" name="songID" value="1">
+        <label for="song1">Song 1</label>
+        <input type="radio" id="song2" name="songID" value="2">
+        <label for="song2">Song 2</label>
+        <input type="radio" id="song3" name="songID" value="3">
+        <label for="song3">Song 3</label>
+        <input type="radio" id="song4" name="songID" value="4">
+        <label for="song4">Song 4</label>
+        <input class="set" type="submit" value="Set song">
+    </form>
 
     <script>
         window.addEventListener('load', getReadings);
@@ -164,7 +177,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     
 </body>
 
-</html>      )rawliteral";
+</html>       )rawliteral";
 
 void handleRoot();
 void handleMode1();
@@ -172,6 +185,7 @@ void handleMode2();
 void handleOff();
 void handleStaticColor();
 void handleSetAlarm();
+void handleSetWakeUpSong();
 void handleNotFound();
 void handleSensor();
 void wifiINIT(String ssid, String password);
@@ -184,7 +198,7 @@ void setup() {
 
   pixels.begin();
   setLEDStrip(0,0,0);
-  wifiINIT("Jesper", "12345677");
+  wifiINIT("AndroidAP", "12345689");
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/mode1", HTTP_GET, handleMode1);
@@ -193,6 +207,7 @@ void setup() {
   server.on("/setStaticColor", handleStaticColor);
   server.on("/setAlarm", handleSetAlarm);
   server.on("/sensor", handleSensor);
+  server.on("/setWakeUpSong", HTTP_GET, handleSetWakeUpSong);
   server.onNotFound(handleNotFound);
 
   // Start the server
@@ -372,6 +387,12 @@ void handleSetAlarm(){
 
 void handleSensor() {
   server.send(STATUSCODE_OK, "text/plain", String(CURRENT_COLOR));
+}
+void handleSetWakeUpSong(){
+  int songID = server.arg("songID").toInt();
+  Serial.println(songID);
+  server.sendHeader("Location","/");
+  server.send(303);
 }
 
 void handleNotFound(){
