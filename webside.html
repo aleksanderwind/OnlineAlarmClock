@@ -79,6 +79,10 @@
         margin-left: 10px;
     }
 
+    p.inline {
+        display: inline;
+    }
+
 </style>
 
 <body> 
@@ -114,6 +118,12 @@
         </form>
     </div>
 
+    <p class = "inline">Date of alarm: </p>
+    <p class = "inline" id = "dateOfAlarm"></p><br>
+    <p class = "inline">Time of alarm: </p>
+    <p class = "inline" id = "timeOfAlarm"></p>
+
+
     <form action="/setWakeUpSong">
         <p>Choose wakeup song: </p>
         <input type="radio" id="song1" name="songID" value="1">
@@ -128,14 +138,50 @@
     </form>
 
     <script>
+        window.addEventListener('load', getCurrentColor);
+
+        function getCurrentColor(){
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              var val = this.responseText;
+              console.log(val);
+              document.getElementById('staticColor').value = val;
+              document.getElementById('color-picker-wrapper').style.backgroundColor = val;
+            }
+          }; 
+          xhr.open("GET", "/getColor", true);
+          xhr.send();
+        }
+
         var color_picker = document.getElementById("staticColor");
         var color_picker_wrapper = document.getElementById("color-picker-wrapper");
         color_picker.onchange = function () {
             color_picker_wrapper.style.backgroundColor = color_picker.value;
         }
         color_picker_wrapper.style.backgroundColor = color_picker.value;
+
+
+        window.addEventListener('load', getCurrentAlarm);
+
+        function getCurrentAlarm(){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200) {
+                var val = this.responseText;
+                console.log(val)
+                var dateAndTime = val.split("#");
+                document.getElementById('alarmDate').value = dateAndTime[0];
+                document.getElementById('alarmTime').value = dateAndTime[1];
+                document.getElementById('dateOfAlarm').innerHTML = dateAndTime[0];
+                document.getElementById('timeOfAlarm').innerHTML = dateAndTime[1];
+                }
+            };
+            xhr.open("GET", "/getAlarmDateAndTime", true);
+            xhr.send();
+        }
     </script>
     
 </body>
 
-</html> 
+</html>

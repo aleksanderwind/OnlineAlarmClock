@@ -15,6 +15,9 @@
 
 String CURRENT_COLOR = "#FFFFFF";
 
+String timeNotFormated = "";
+String dateNotFormated = "";
+
 Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB);
 
 ESP8266WiFiMulti wifiMulti;
@@ -102,6 +105,10 @@ const char index_html[] PROGMEM = R"rawliteral(
         margin-left: 10px;
     }
 
+    p.inline {
+        display: inline;
+    }
+
 </style>
 
 <body> 
@@ -137,6 +144,12 @@ const char index_html[] PROGMEM = R"rawliteral(
         </form>
     </div>
 
+    <p class = "inline">Date of alarm: </p>
+    <p class = "inline" id = "dateOfAlarm"></p><br>
+    <p class = "inline">Time of alarm: </p>
+    <p class = "inline" id = "timeOfAlarm"></p>
+
+
     <form action="/setWakeUpSong">
         <p>Choose wakeup song: </p>
         <input type="radio" id="song1" name="songID" value="1">
@@ -151,9 +164,9 @@ const char index_html[] PROGMEM = R"rawliteral(
     </form>
 
     <script>
-        window.addEventListener('load', getReadings);
+        window.addEventListener('load', getCurrentColor);
 
-        function getReadings(){
+        function getCurrentColor(){
           var xhr = new XMLHttpRequest();
           xhr.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -163,7 +176,7 @@ const char index_html[] PROGMEM = R"rawliteral(
               document.getElementById('color-picker-wrapper').style.backgroundColor = val;
             }
           }; 
-          xhr.open("GET", "/sensor", true);
+          xhr.open("GET", "/getColor", true);
           xhr.send();
         }
 
@@ -173,11 +186,31 @@ const char index_html[] PROGMEM = R"rawliteral(
             color_picker_wrapper.style.backgroundColor = color_picker.value;
         }
         color_picker_wrapper.style.backgroundColor = color_picker.value;
+
+
+        window.addEventListener('load', getCurrentAlarm);
+
+        function getCurrentAlarm(){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200) {
+                var val = this.responseText;
+                console.log(val)
+                var dateAndTime = val.split("#");
+                document.getElementById('alarmDate').value = dateAndTime[0];
+                document.getElementById('alarmTime').value = dateAndTime[1];
+                document.getElementById('dateOfAlarm').innerHTML = dateAndTime[0];
+                document.getElementById('timeOfAlarm').innerHTML = dateAndTime[1];
+                }
+            };
+            xhr.open("GET", "/getAlarmDateAndTime", true);
+            xhr.send();
+        }
     </script>
     
 </body>
 
-</html>       )rawliteral";
+</html>   )rawliteral";
 
 void handleRoot();
 void handleMode1();
@@ -187,7 +220,8 @@ void handleStaticColor();
 void handleSetAlarm();
 void handleSetWakeUpSong();
 void handleNotFound();
-void handleSensor();
+void getCurrentColor();
+void getAlarmDateAndTime();
 void wifiINIT(String ssid, String password);
 void setLEDStrip(int r, int g, int b);
 void setLEDStripHex(long hex);
@@ -206,7 +240,8 @@ void setup() {
   server.on("/off", HTTP_GET, handleOff);
   server.on("/setStaticColor", handleStaticColor);
   server.on("/setAlarm", handleSetAlarm);
-  server.on("/sensor", handleSensor);
+  server.on("/getColor", getCurrentColor);
+  server.on("/getAlarmDateAndTime",getAlarmDateAndTime);
   server.on("/setWakeUpSong", HTTP_GET, handleSetWakeUpSong);
   server.onNotFound(handleNotFound);
 
@@ -367,8 +402,8 @@ void handleStaticColor() {
 }
 
 void handleSetAlarm(){
-  String timeNotFormated = server.arg("alarmTime");
-  String dateNotFormated = server.arg("alarmDate");
+  timeNotFormated = server.arg("alarmTime");
+  dateNotFormated = server.arg("alarmDate");
   Serial.println(dateNotFormated);
   Serial.println(timeNotFormated);
   int hour = timeNotFormated.substring(0,2).toInt();
@@ -385,9 +420,15 @@ void handleSetAlarm(){
   server.send(303);  
 }
 
-void handleSensor() {
+void getCurrentColor() {
   server.send(STATUSCODE_OK, "text/plain", String(CURRENT_COLOR));
 }
+
+void getAlarmDateAndTime(){
+  server.send(STATUSCODE_OK, "text/plain", dateNotFormated + "#" + timeNotFormated);
+  Serial.println(dateNotFormated + "#" + timeNotFormated);
+}
+
 void handleSetWakeUpSong(){
   int songID = server.arg("songID").toInt();
   Serial.println(songID);
