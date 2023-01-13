@@ -5,10 +5,15 @@
 #include <ESP8266mDNS.h>       // Include the mDNS library
 #include <Adafruit_NeoPixel.h>
 
+#include "html_page.h"
+#include "LED_driver.h"
+
 #define LED_PIN 14
 #define NUM_LEDS 5
-#define LED_TYPE WS2812B
-#define COLOR_ORDER GRB
+
+Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB);
+
+LED led_strip(NUM_LEDS, LED_PIN, &strip);
 
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
@@ -18,13 +23,11 @@ String CURRENT_COLOR = "#FFFFFF";
 String timeNotFormated = "";
 String dateNotFormated = "";
 
-Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB);
 
 ESP8266WiFiMulti wifiMulti;
 // Create an instance of the server
 ESP8266WebServer server(80);
 
-#include "html_page.h"
 
 void handleRoot();
 void handleMode1();
@@ -37,15 +40,12 @@ void handleNotFound();
 void getCurrentColor();
 void getAlarmDateAndTime();
 void wifiINIT(String ssid, String password);
-void setLEDStrip(int r, int g, int b);
-void setLEDStripHex(long hex);
 
 void setup() {
   Serial.begin(115200);
   delay(10);
 
-  pixels.begin();
-  setLEDStrip(0,0,0);
+  led_strip.setLEDStrip(0,0,0);
   wifiINIT("AndroidAP", "12345689");
 
   server.on("/", HTTP_GET, handleRoot);
@@ -62,7 +62,8 @@ void setup() {
   // Start the server
   server.begin();
   Serial.println("Server started");
-  pixels.clear();
+
+  led_strip.clear();
 }
 
 void loop() {
@@ -114,66 +115,8 @@ void handleRoot() {
   analogWrite(bluePin, (colorValue & 0x0000ff));
 }*/
 
-long hexToDec(String hexString) {
-  long decValue = 0;
-  int nextInt;
-
-  for (int i = 0; i < hexString.length(); i++) {
-    nextInt = int(hexString.charAt(i));
-    if (nextInt >= 48 && nextInt <= 57) nextInt -= 48;
-    if (nextInt >= 65 && nextInt <= 70) nextInt -= 45;
-    if (nextInt >= 97 && nextInt <= 102) nextInt -= 87;
-    nextInt = constrain(nextInt, 0, 15);
-    decValue = (decValue * 16) + nextInt;
-  }
-  return decValue;
-}
-
-void setLEDStrip(int r, int g, int b) {
-  /*
-   * Description
-   * Takes three integers r, g and b and sets the led strip to the color specified by that three numbers.
-   * 
-   * INPUT: r,g,b number between 0 and 255
-   * OUTPUT: none
-   * 
-   * Example:
-   * setLEDStrip(255,0,0);
-   * 
-   * Sets the color of the LED strip to red.
-  */
-
-  //CURRENT_COLOR = "#" + String(r, HEX) + String(g, HEX) + String(b, HEX);
-
-  for (int i = 0; i < NUM_LEDS; i++) {
-    pixels.setPixelColor(i, pixels.Color(r, g, b));
-  }
-    pixels.show();
-}
-
-void setLEDStripHEX(long colorValue) {
-  /*
-   * Description
-   * Takes a long value at sets the RGB strip to that color.
-   * 
-   * INPUT: long colorValue
-   * OUTPUT: none
-   * 
-   * Example:
-   * setLEDStrip(0xFF0000);
-   * 
-   * Sets the color of the LED strip to red.
-  */
-
-  int r, g, b;
-  r = colorValue >> 16;
-  g = (colorValue & 0x00FF00) >> 8;
-  b = colorValue & 0xFF;
-  setLEDStrip(r,g,b);
-}
-
 void handleMode1() {
-  setLEDStripHEX(0xFF0000);
+  led_strip.setLEDStripHex(0xFF0000);
   delay(10);
   //FastLED.show();
   server.sendHeader("Location", "/");
@@ -181,7 +124,7 @@ void handleMode1() {
 }
 
 void handleMode2() {
-  setLEDStripHEX(0x0000FF);
+  led_strip.setLEDStripHex(0x0000FF);
   delay(10);
   //FastLED.show();
   server.sendHeader("Location", "/");
@@ -189,7 +132,7 @@ void handleMode2() {
 }
 
 void handleOff() {
-  setLEDStripHEX(0x000000);
+  led_strip.setLEDStripHex(0x000000);
   delay(40);
   //FastLED.show();
   server.sendHeader("Location", "/");
@@ -208,7 +151,7 @@ void handleStaticColor() {
   Serial.println((colorValue & 0x00ff00)>>8);
   Serial.println((colorValue & 0x0000ff));
   setColorHEX(colorValue);*/
-  setLEDStripHEX(colorValue);
+  led_strip.setLEDStripHex(colorValue);
   delay(10);
   //FastLED.show();
   server.sendHeader("Location", "/");
