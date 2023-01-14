@@ -1,12 +1,20 @@
 #include <Adafruit_NeoPixel.h>
 #include <ESP8266WebServer.h>  // Include the WebServer library
+#include <DHT.h>
 
 #include "html_page.h"
 #include "LED_driver.h"
 #include "iotserver.h"
+#include "sensors.h"
 
 #define LED_PIN 14
 #define NUM_LEDS 5
+
+const int DHTPIN = 13;
+const int DHTTYPE = DHT11;
+const int photosens = A0;
+
+DHT dht(DHTPIN, DHTTYPE);
 
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB);
 
@@ -25,6 +33,9 @@ void setup() {
   Serial.begin(115200);
   delay(10);
   Serial.println();
+
+  // init sensors (DHT11 and LDR)
+  initSensors(&dht, photosens);
 
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
   initServer(&webserver, &led_strip);
