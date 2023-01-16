@@ -1,7 +1,7 @@
 #include "iotserver.h"
 
 int* DHTPIN;
-int* LDRPIN; //find pin
+int* LDRPIN;
 
 DHTsensor* sensor;
 
@@ -23,6 +23,7 @@ String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Fri
 
 int currentSong = 0;
 
+//Initializes all needed global variables and server handles
 void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR) {
   sensor = SENSOR;
   
@@ -56,7 +57,7 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DH
 
   SERVER->on("/getSensorReading", getSensorReading);
 
-  SERVER->onNotFound(handleNotFound);
+  SERVER->onNotFound(handleNotFound); //code 404
 }
 
 void initNTP(NTPClient* timeClient, myTM* currentTime){
@@ -102,12 +103,13 @@ void connectToWifi(String SSID, String PASSWORD, ESP8266WiFiMulti* wifiMulti) {
   }
 }
 
+//root/index page
 void handleRoot() {
   SERVER->send(200, "text/html", index_html);
 }
 
 void handleMode1() {
-  LED_STRIP->setLEDStripHex(0xFF0000);
+  LED_STRIP->setLEDStripHex(0xFF0000); //full red
   delay(10);
   //FastLED.show();
   SERVER->sendHeader("Location", "/");
@@ -115,7 +117,7 @@ void handleMode1() {
 }
 
 void handleMode2() {
-  LED_STRIP->setLEDStripHex(0x0000FF);
+  LED_STRIP->setLEDStripHex(0x0000FF); //full blue
   delay(10);
   //FastLED.show();
   SERVER->sendHeader("Location", "/");
@@ -123,13 +125,14 @@ void handleMode2() {
 }
 
 void handleOff() {
-  LED_STRIP->setLEDStripHex(0x000000);
+  LED_STRIP->setLEDStripHex(0x000000); //all LED off
   delay(40);
   //FastLED.show();
   SERVER->sendHeader("Location", "/");
   SERVER->send(STATUSCODE_SEEOTHER);
 }
 
+//Displays user defined color
 void handleStaticColor() {
   String incomingHex = SERVER->arg("staticColor");
   CURRENT_COLOR = incomingHex;
@@ -144,6 +147,7 @@ void handleStaticColor() {
   SERVER->send(STATUSCODE_SEEOTHER);
 }
 
+//Sets alarm to user defined time
 void handleSetAlarm() {
   timeNotFormated = SERVER->arg("alarmTime");
   dateNotFormated = SERVER->arg("alarmDate");
@@ -163,19 +167,23 @@ void handleSetAlarm() {
   SERVER->send(303);
 }
 
+//returns currently displayed color
 void getCurrentColor() {
   SERVER->send(STATUSCODE_OK, "text/plain", String(CURRENT_COLOR));
 }
 
+//returns time and date of currently set alarm
 void getAlarmDateAndTime() {
   SERVER->send(STATUSCODE_OK, "text/plain", dateNotFormated + "#" + timeNotFormated);
   //Serial.println(dateNotFormated + "#" + timeNotFormated);
 }
 
+//returns currently playing melody
 void getCurrentSong() {
   SERVER->send(STATUSCODE_OK, "text/plain", String(currentSong));
 }
 
+//sets melody to be played to the one defined by the user
 void handleSetWakeUpSong() {
   currentSong = SERVER->arg("songID").toInt();
   Serial.println(currentSong);
@@ -183,11 +191,13 @@ void handleSetWakeUpSong() {
   SERVER->send(303);
 }
 
+//Updates time displayed on the page
 void updatePage(){
   //Serial.println(weekDays[day] + "#" + String(hour) + "#" + String(minute));
   SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute));
 }
 
+//Updates current time values
 void updateTime(){
   TimeClient->update();
   CurrentTime->hour = TimeClient->getHours();
@@ -197,7 +207,7 @@ void updateTime(){
   SEGMENT->setClock(CurrentTime->hour, CurrentTime->minute);
 }
 
-// Skal implementeres i HTML
+//returns current readings from the DHT and photo sensors
 void getSensorReading()
 {
   char tmpT[5];
@@ -224,6 +234,7 @@ void getSensorReading()
    */
 }
 
+//404 error when no mathing handle is found
 void handleNotFound() {
   SERVER->send(404, "text/plain", "404: Not found");  // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
 }
