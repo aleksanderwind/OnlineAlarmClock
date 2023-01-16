@@ -167,6 +167,8 @@ void handleSetWakeUpSong() {
   SERVER->send(303);
 }
 
+
+// Skal implementeres i HTML
 void getSensorReading()
 {
   char tmpT[5];
@@ -175,11 +177,11 @@ void getSensorReading()
   String lumen = String(sensor->smoothLumen());
   tmpTF = sensor->smoothTempDHT();
   tmpHF = sensor->smoothHumiDHT();
-
-  debug++;
   
   dtostrf(tmpTF, 4, 1, tmpT);
   dtostrf(tmpHF, 4, 1, tmpH);
+  
+  debug++;
   Serial.print(tmpT);
   Serial.print("#");
   Serial.print(tmpH);
@@ -187,6 +189,7 @@ void getSensorReading()
   Serial.print(lumen);
   Serial.print(" RUN:");
   Serial.println(debug);
+  
   SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
   /* Units for sensor data:
    * Temperature (tmpT): Celcius
