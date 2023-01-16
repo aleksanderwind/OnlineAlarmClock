@@ -1,15 +1,20 @@
 #include "iotserver.h"
 
+myTM* CurrentTime;
+
 ESP8266WebServer* SERVER;
 
 LED* LED_STRIP;
 
 SegmentDriver* SEGMENT;
+NTPClient* TimeClient;
 
 String CURRENT_COLOR = "#FFFFFF";
 
 String timeNotFormated = "";
 String dateNotFormated = "";
+
+String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 int currentSong = 0;
 
@@ -40,7 +45,16 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display) {
 
   SERVER->on("/getCurrentWakeUpSong", getCurrentSong);
 
+  SERVER->on("/updatePage", updatePage);
+
   SERVER->onNotFound(handleNotFound);
+}
+
+void initNTP(NTPClient* timeClient, myTM* currentTime){
+  TimeClient = timeClient;
+  CurrentTime = currentTime;
+  TimeClient->begin();
+  TimeClient->setTimeOffset(3600);
 }
 
 void startServer() {
@@ -158,6 +172,21 @@ void handleSetWakeUpSong() {
   Serial.println(currentSong);
   SERVER->sendHeader("Location", "/");
   SERVER->send(303);
+}
+
+void updatePage(){
+  //Serial.println(weekDays[day] + "#" + String(hour) + "#" + String(minute));
+  SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute));
+}
+
+void updateTime(){
+  TimeClient->update();
+  CurrentTime->hour = TimeClient->getHours();
+  CurrentTime->minute = TimeClient->getMinutes();
+  CurrentTime->day = TimeClient->getDay();
+}
+void getSensorData(){
+  
 }
 
 void handleNotFound() {

@@ -8,6 +8,8 @@
 #include "sensors.h"
 #include "interface.h"
 
+struct myTM currentTime;
+
 #define LED_PIN 4 //D2 on ESP8266
 #define NUM_LEDS 5
 
@@ -20,6 +22,11 @@
 #define photosens A0
 
 SegmentDriver display = SegmentDriver(DIN, CLK, CS);
+
+//declare NTP objects
+const char* ntpServer = "pool.ntp.org";
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, ntpServer);
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -44,6 +51,9 @@ void setup() {
   // init sensors (DHT11 and LDR)
   initSensors(&dht, photosens);
 
+  // init NTP to get time from a server
+  initNTP(&timeClient, &currentTime);
+
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
   initServer(&webserver, &led_strip, &display);
 
@@ -62,4 +72,5 @@ void setup() {
 void loop() {
   // Check if a client has connected
   handleClients();
+  updateTime();
 }
