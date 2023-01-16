@@ -18,7 +18,7 @@ String dateNotFormated = "";
 int currentSong = 0;
 
 void initServer(ESP8266WebServer* server, LED* strip, DHTsensor* SENSOR) {
-  
+
   sensor = SENSOR;
   
   SERVER = server;
@@ -172,9 +172,11 @@ void getSensorReading()
   char tmpT[5];
   char tmpH[5];
   float tmpTF, tmpHF;
-  String lumen = String(sensor.smoothLumen());
-  tmpTF = sensor.smoothTempDHT();
-  tmpHF = sensor.smoothHumiDHT();
+  String lumen = String(sensor->smoothLumen());
+  tmpTF = sensor->smoothTempDHT();
+  tmpHF = sensor->smoothHumiDHT();
+
+  debug++;
   
   dtostrf(tmpTF, 4, 1, tmpT);
   dtostrf(tmpHF, 4, 1, tmpH);

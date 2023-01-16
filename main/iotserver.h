@@ -15,7 +15,7 @@
 
 void connectToWifi(String ssid, String password, ESP8266WiFiMulti* wifiMulti);
 
-void initServer(ESP8266WebServer* server, LED* strip);
+void initServer(ESP8266WebServer* server, LED* strip, DHTsensor* sensor);
 
 void startServer();
 

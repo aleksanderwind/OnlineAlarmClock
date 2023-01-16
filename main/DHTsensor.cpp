@@ -35,7 +35,7 @@ void DHTsensor::dhtBegin()
 }
 
 float DHTsensor::smoothTempDHT() {
-  Serial.print("tempDebug ");
+  //Serial.print("tempDebug ");
   /* Description
     Performs average of last N temperature readings (numReadingsTemp, defined in parameters at the beginning of doc).
     DHT sensor should be connected to a digital port.
@@ -68,12 +68,12 @@ float DHTsensor::smoothTempDHT() {
   
   // calculate and return the average: 
   avgTmp = totalTemp / numReadingsTemp;
-  Serial.println(avgTmp);
+  //Serial.println(avgTmp);
   return avgTmp;
 }
 
 float DHTsensor::smoothHumiDHT() {
-    Serial.print("humiDebug ");
+    //Serial.print("humiDebug ");
 
   /* Description
     Performs average of last N humidity readings (numReadingsHumi, defined in parameters at the beginning of doc).
@@ -108,12 +108,12 @@ float DHTsensor::smoothHumiDHT() {
   
   // calculate and return the average:
   avgHum = totalHumi / numReadingsHumi;
-  Serial.println(avgHum);
+  //Serial.println(avgHum);
   return avgHum;
 }
 
 int DHTsensor::smoothLumen(){
-    Serial.print("lumnDebug ");
+    //Serial.print("lumnDebug ");
 
   /* Description
   Performs average of last N lumen readings (numReadingsLumen, defined in parameters at the beginning of doc).
@@ -145,6 +145,6 @@ int DHTsensor::smoothLumen(){
   }
   // calculate the average:
   avgLum = totalLumen / numReadingsLumen;
-  Serial.println(avgLum);
+  //Serial.println(avgLum);
   return avgLum;
 }
