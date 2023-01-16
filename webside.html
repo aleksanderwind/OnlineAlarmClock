@@ -148,17 +148,6 @@
     <p class = "inline" id = "currentHour"></p>
     <p class = "inline">;</p>
     <p class = "inline" id = "currentMinute"></p><br>
-    <b class = "big"> Data</b>
-    <button id="updateData">Update data</button><br>
-    <p class ="inline"> Temperature: </p>
-
-    <p class ="inline"> &#x2103;</p><br>
-    <p class ="inline"> Humidity: </p>
-    
-    <p class ="inline"> %</p><br>
-    <p class ="inline"> Light level: </p>
-    
-    <p class ="inline"> lm</p>
 
     <script>
         window.addEventListener('load', getCurrentColor);
@@ -230,20 +219,14 @@
             xhr.send();
         }
 
-<<<<<<< HEAD
         const someInterval = setInterval(updatePage, 1000);
 
         function updatePage(){
-=======
-        const element = document.getElementById("updateData");
-        element.addEventListener("click", function(){
->>>>>>> main
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function(){
                 if (this.readyState == 4 && this.status == 200) {
                 var val = this.responseText;
                 console.log(val)
-<<<<<<< HEAD
                 var dayHourMinute = val.split("#");
                 document.getElementById("currentDay").innerHTML = dayHourMinute[0]
                 document.getElementById("currentHour").innerHTML = dayHourMinute[1]
@@ -253,16 +236,6 @@
             xhr.open("GET", "/updatePage", true);
             xhr.send();
         }
-=======
-                
-                }
-            };
-            xhr.open("GET", "/updateData", true);
-            xhr.send();
-        });
-
-
->>>>>>> main
 
 
     </script>
