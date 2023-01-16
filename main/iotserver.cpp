@@ -6,6 +6,7 @@ ESP8266WebServer* SERVER;
 
 LED* LED_STRIP;
 
+SegmentDriver* SEGMENT;
 NTPClient* TimeClient;
 
 String CURRENT_COLOR = "#FFFFFF";
@@ -17,10 +18,12 @@ String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Fri
 
 int currentSong = 0;
 
-void initServer(ESP8266WebServer* server, LED* strip) {
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display) {
   SERVER = server;
 
   LED_STRIP = strip;
+
+  SEGMENT = display;
 
   SERVER->on("/", HTTP_GET, handleRoot);
 

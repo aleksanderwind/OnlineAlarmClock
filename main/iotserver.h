@@ -10,6 +10,7 @@
 #include <WiFiUdp.h>
 #include "html_page.h"
 #include "LED_driver.h"
+#include "interface.h"
 
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
@@ -24,7 +25,7 @@ struct myTM {
 
 void connectToWifi(String ssid, String password, ESP8266WiFiMulti* wifiMulti);
 
-void initServer(ESP8266WebServer* server, LED* strip);
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display);
 
 void initNTP(NTPClient* timeClient, myTM* currentTime);
 
