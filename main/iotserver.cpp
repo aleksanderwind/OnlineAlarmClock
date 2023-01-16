@@ -184,6 +184,8 @@ void updateTime(){
   CurrentTime->hour = TimeClient->getHours();
   CurrentTime->minute = TimeClient->getMinutes();
   CurrentTime->day = TimeClient->getDay();
+
+  SEGMENT->setClock(CurrentTime->hour, CurrentTime->minute);
 }
 void getSensorData(){
   
