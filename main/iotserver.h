@@ -42,4 +42,6 @@ void getAlarmDateAndTime();
 
 void getCurrentSong();
 
+void getSensorData();
+
 #endif  // iotserver
