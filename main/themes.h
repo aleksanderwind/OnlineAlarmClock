@@ -4,7 +4,7 @@
 #include "pitches.h"
 #include "Arduino.h"
 
-int* buzzer_pin;
+int buzzer_pin;
 
 
 /*

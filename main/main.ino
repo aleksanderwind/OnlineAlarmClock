@@ -23,6 +23,8 @@ struct myTM currentTime;
 
 #define BUZZER_PIN 999;
 
+initBuzzer(BUZZER_PIN);
+
 SegmentDriver display = SegmentDriver(DIN, CLK, CS);
 
 //declare NTP objects
