@@ -9,13 +9,15 @@
 
 #define LED_PIN 14
 #define NUM_LEDS 5
-/*
-const int DHTPIN = 0;
-const int LDRPIN = 2; //find pin
-*/
+
+const int DHTPIN = 12;
+const int LDRPIN = A0; //find pin
+
 //const int photosens = A0;
 
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB);
+
+DHTsensor sens(DHTPIN, LDRPIN);
 
 LED led_strip(NUM_LEDS, LED_PIN, &strip);
 
@@ -37,7 +39,7 @@ void setup() {
   //initSensors(&dht, photosens);
 
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
-  initServer(&webserver, &led_strip);
+  initServer(&webserver, &led_strip, &sens);
 
   // Connect to the wifi using the set SSID and PASSWORD
   connectToWifi(SSID, PASSWORD, &wifiMulti);
