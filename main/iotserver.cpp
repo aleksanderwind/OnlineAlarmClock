@@ -214,7 +214,7 @@ void getSensorReading()
   Serial.print("#");
   Serial.print(tmpH);
   Serial.print("#");
-  Serial.print(lumen);
+  Serial.println(lumen);
   
   SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
   /* Units for sensor data:
