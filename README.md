@@ -7,7 +7,6 @@ The project is built from different individual components, which in conjunction 
 
 ### Module (Author)
 - Server backend (Aleksander)
-- RTC module (Aske)
 - Temperature sensor + Photoresistor (Marcus)
 - 7 Segment display (Jesper)
 - LED strip (Aske)

@@ -7,6 +7,7 @@
 #include "iotserver.h"
 #include "DHTsensor.h"
 #include "interface.h"
+#include "themes.h"
 
 struct myTM currentTime;
 
@@ -19,6 +20,10 @@ struct myTM currentTime;
 
 #define DHTPIN 12 //D6 on ESP8266 
 #define LDRPIN A0
+
+#define BUZZER_PIN 999;
+
+initBuzzer(BUZZER_PIN);
 
 SegmentDriver display = SegmentDriver(DIN, CLK, CS);
 
