@@ -10,6 +10,13 @@
 #define DHTsensor_h
 
 #include <DHT.h>
+
+struct data {
+  float temperature;
+  float humidity;
+  float lightLevel;
+};
+
 /*
 #define DHTPIN 13
 #define DHTTYPE DHT22
@@ -43,7 +50,7 @@ class DHTsensor
     //DHTsensor(int dhtPin) : dht(dhtPin, DHT22) {}
     float smoothTempDHT();
     float smoothHumiDHT();
-    int smoothLumen();
+    float smoothLumen();
     void dhtBegin();
 };
 

@@ -2,10 +2,7 @@
 #define interface_h
 
 #include <Arduino.h>
-
-struct data {
-  int 
-};
+#include "DHTsensor.h"
 
 const static byte asciiTableRef[] PROGMEM = {
   B00000001, B10000000, B00000000, B01111110, B00110000, B01101101, B01111001, B00110011, B01011011, B01011111, B01110000,
@@ -37,4 +34,7 @@ public:
   int setClock(int hour, int minute);
   void clear();
 };
+
+void readSensors(data* sensorData, DHTsensor* sensor);
+
 #endif  // interface_h

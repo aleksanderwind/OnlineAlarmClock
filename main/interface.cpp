@@ -201,3 +201,10 @@ int SegmentDriver::sendSPI(volatile byte data, volatile byte instruction) {
 
   return 0;
 }
+
+void readSensors(data* sensorData, DHTsensor* sensor){
+  sensorData->temperature = sensor->smoothTempDHT();
+  delay(300);
+  sensorData->humidity = sensor->smoothHumiDHT();
+  sensorData->lightLevel = sensor->smoothLumen();
+}

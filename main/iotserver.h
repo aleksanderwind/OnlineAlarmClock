@@ -26,7 +26,7 @@ struct myTM {
 
 void connectToWifi(String ssid, String password, ESP8266WiFiMulti* wifiMulti);
 
-void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* sensor);
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR, data* SensorData);
 
 void initNTP(NTPClient* timeClient, myTM* currentTime);
 

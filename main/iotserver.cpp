@@ -7,6 +7,8 @@ DHTsensor* sensor;
 
 myTM* CurrentTime;
 
+data* SensorData;
+
 ESP8266WebServer* SERVER;
 
 LED* LED_STRIP;
@@ -23,7 +25,9 @@ String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Fri
 
 int currentSong = 0;
 
-void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR) {
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR, data* sensorData) {
+  SensorData = sensorData;
+  
   sensor = SENSOR;
   
   SERVER = server;
@@ -184,8 +188,9 @@ void handleSetWakeUpSong() {
 }
 
 void updatePage(){
-  //Serial.println(weekDays[day] + "#" + String(hour) + "#" + String(minute));
-  SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute));
+  readSensors(SensorData, sensor);
+  Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
+  SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
 }
 
 void updateTime(){
@@ -209,12 +214,14 @@ void getSensorReading()
   
   dtostrf(tmpTF, 4, 1, tmpT);
   dtostrf(tmpHF, 4, 1, tmpH);
-  
+
+  /*
   Serial.print(tmpT);
   Serial.print("#");
   Serial.print(tmpH);
   Serial.print("#");
-  Serial.println(lumen);
+  Serial.print(lumen);
+  */
   
   SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
   /* Units for sensor data:

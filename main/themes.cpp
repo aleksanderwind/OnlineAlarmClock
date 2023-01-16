@@ -138,7 +138,10 @@ int PinkPanther_duration[] = {
 
 //###########End of Pink Panther#############//
 
-void initBuzzer(int* buzz_pin){
+
+int buzzer_pin;
+
+void initBuzzer(int buzz_pin){
   buzzer_pin = buzz_pin;
 }
 

@@ -46,7 +46,7 @@ float DHTsensor::smoothTempDHT() {
     >>> smoothTempDHT()
     22.4
   */
-  float avgTmp;
+  float avgTmp = 0;
   
   // subtract last reading
   totalTemp = totalTemp - readingsTemp[readIndexTemp];
@@ -112,7 +112,7 @@ float DHTsensor::smoothHumiDHT() {
   return avgHum;
 }
 
-int DHTsensor::smoothLumen(){
+float DHTsensor::smoothLumen(){
     //Serial.print("lumnDebug ");
 
   /* Description
