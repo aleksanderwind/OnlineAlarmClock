@@ -210,14 +210,11 @@ void getSensorReading()
   dtostrf(tmpTF, 4, 1, tmpT);
   dtostrf(tmpHF, 4, 1, tmpH);
   
-  debug++;
   Serial.print(tmpT);
   Serial.print("#");
   Serial.print(tmpH);
   Serial.print("#");
   Serial.print(lumen);
-  Serial.print(" RUN:");
-  Serial.println(debug);
   
   SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
   /* Units for sensor data:

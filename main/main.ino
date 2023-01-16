@@ -18,7 +18,7 @@ struct myTM currentTime;
 #define CS 15   //D8 on ESP8266
 
 #define DHTPIN 12 //D6 on ESP8266 
-#define photosens A0
+#define LDRPIN A0
 
 SegmentDriver display = SegmentDriver(DIN, CLK, CS);
 
