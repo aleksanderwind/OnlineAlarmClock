@@ -4,6 +4,8 @@ ESP8266WebServer* SERVER;
 
 LED* LED_STRIP;
 
+SegmentDriver* SEGMENT;
+
 String CURRENT_COLOR = "#FFFFFF";
 
 String timeNotFormated = "";
@@ -11,10 +13,12 @@ String dateNotFormated = "";
 
 int currentSong = 0;
 
-void initServer(ESP8266WebServer* server, LED* strip) {
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display) {
   SERVER = server;
 
   LED_STRIP = strip;
+
+  SEGMENT = display;
 
   SERVER->on("/", HTTP_GET, handleRoot);
 
