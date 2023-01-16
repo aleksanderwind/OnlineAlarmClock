@@ -1,5 +1,10 @@
 #include "iotserver.h"
 
+int* DHTPIN;
+int* LDRPIN; //find pin
+
+DHTsensor* sensor;
+
 myTM* CurrentTime;
 
 ESP8266WebServer* SERVER;
@@ -18,7 +23,9 @@ String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Fri
 
 int currentSong = 0;
 
-void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display) {
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR) {
+  sensor = SENSOR;
+  
   SERVER = server;
 
   LED_STRIP = strip;
@@ -46,6 +53,8 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display) {
   SERVER->on("/getCurrentWakeUpSong", getCurrentSong);
 
   SERVER->on("/updatePage", updatePage);
+
+  SERVER->on("/getSensorReading", getSensorReading);
 
   SERVER->onNotFound(handleNotFound);
 }
@@ -187,8 +196,35 @@ void updateTime(){
 
   SEGMENT->setClock(CurrentTime->hour, CurrentTime->minute);
 }
-void getSensorData(){
+
+// Skal implementeres i HTML
+void getSensorReading()
+{
+  char tmpT[5];
+  char tmpH[5];
+  float tmpTF, tmpHF;
+  String lumen = String(sensor->smoothLumen());
+  tmpTF = sensor->smoothTempDHT();
+  tmpHF = sensor->smoothHumiDHT();
   
+  dtostrf(tmpTF, 4, 1, tmpT);
+  dtostrf(tmpHF, 4, 1, tmpH);
+  
+  debug++;
+  Serial.print(tmpT);
+  Serial.print("#");
+  Serial.print(tmpH);
+  Serial.print("#");
+  Serial.print(lumen);
+  Serial.print(" RUN:");
+  Serial.println(debug);
+  
+  SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
+  /* Units for sensor data:
+   * Temperature (tmpT): Celcius
+   * Humidity (tmpH): Percent
+   * Light (lumen): Lumen
+   */
 }
 
 void handleNotFound() {

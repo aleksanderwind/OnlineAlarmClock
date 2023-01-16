@@ -11,6 +11,7 @@
 #include "html_page.h"
 #include "LED_driver.h"
 #include "interface.h"
+#include "DHTsensor.h"
 
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
@@ -25,7 +26,7 @@ struct myTM {
 
 void connectToWifi(String ssid, String password, ESP8266WiFiMulti* wifiMulti);
 
-void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display);
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* sensor);
 
 void initNTP(NTPClient* timeClient, myTM* currentTime);
 
@@ -55,7 +56,7 @@ void getAlarmDateAndTime();
 
 void getCurrentSong();
 
-void getSensorData();
+void getSensorReading();
 
 void updatePage();
 

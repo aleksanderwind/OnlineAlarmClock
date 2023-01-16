@@ -5,7 +5,7 @@
 #include "html_page.h"
 #include "LED_driver.h"
 #include "iotserver.h"
-#include "sensors.h"
+#include "DHTsensor.h"
 #include "interface.h"
 
 struct myTM currentTime;
@@ -18,7 +18,6 @@ struct myTM currentTime;
 #define CS 15   //D8 on ESP8266
 
 #define DHTPIN 12 //D6 on ESP8266 
-#define DHTTYPE DHT11
 #define photosens A0
 
 SegmentDriver display = SegmentDriver(DIN, CLK, CS);
@@ -28,7 +27,7 @@ const char* ntpServer = "pool.ntp.org";
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, ntpServer);
 
-DHT dht(DHTPIN, DHTTYPE);
+DHTsensor sens(DHTPIN, LDRPIN);
 
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB);
 
@@ -48,14 +47,11 @@ void setup() {
   delay(10);
   Serial.println();
 
-  // init sensors (DHT11 and LDR)
-  initSensors(&dht, photosens);
-
   // init NTP to get time from a server
   initNTP(&timeClient, &currentTime);
 
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
-  initServer(&webserver, &led_strip, &display);
+  initServer(&webserver, &led_strip, &display, &sens);
 
   // Connect to the wifi using the set SSID and PASSWORD
   connectToWifi(SSID, PASSWORD, &wifiMulti);
