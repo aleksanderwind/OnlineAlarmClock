@@ -1,19 +1,8 @@
-/*
-   Created by ArduinoGetStarted.com
-
-   This example code is in the public domain
-
-   Tutorial page: https://arduinogetstarted.com/tutorials/arduino-temperature-humidity-sensor
-*/
-
 #ifndef DHTsensor_h
 #define DHTsensor_h
 
 #include <DHT.h>
-/*
-#define DHTPIN 13
-#define DHTTYPE DHT22
-*/
+
 class DHTsensor
 {
   private:
@@ -40,13 +29,10 @@ class DHTsensor
    public:
     DHT dht;
     DHTsensor (int , int );
-    //DHTsensor(int dhtPin) : dht(dhtPin, DHT22) {}
     float smoothTempDHT();
     float smoothHumiDHT();
     int smoothLumen();
     void dhtBegin();
 };
-
-//DHTsensor::DHTsensor(int dhtPin):dht(dhtPin, DHT22){}
 
 #endif
