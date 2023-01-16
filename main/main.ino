@@ -5,23 +5,22 @@
 #include "html_page.h"
 #include "LED_driver.h"
 #include "iotserver.h"
-#include "sensors.h"
+#include "DHTsensor.h"
 
 #define LED_PIN 14
 #define NUM_LEDS 5
-
-const int DHTPIN = 13;
-const int DHTTYPE = DHT11;
-const int photosens = A0;
-
-DHT dht(DHTPIN, DHTTYPE);
+/*
+const int DHTPIN = 0;
+const int LDRPIN = 2; //find pin
+*/
+//const int photosens = A0;
 
 Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB);
 
 LED led_strip(NUM_LEDS, LED_PIN, &strip);
 
-String SSID = "AndroidAP";
-String PASSWORD = "12345689";
+String SSID = "Hot MILF nearby";
+String PASSWORD = "14151415";
 
 // Create an instance of the server
 ESP8266WebServer webserver(80);
@@ -35,7 +34,7 @@ void setup() {
   Serial.println();
 
   // init sensors (DHT11 and LDR)
-  initSensors(&dht, photosens);
+  //initSensors(&dht, photosens);
 
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
   initServer(&webserver, &led_strip);

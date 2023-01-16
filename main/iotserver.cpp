@@ -1,5 +1,9 @@
 #include "iotserver.h"
 
+const int DHTPIN = 12;
+const int LDRPIN = A0; //find pin
+
+DHTsensor sensor(DHTPIN,LDRPIN);
 ESP8266WebServer* SERVER;
 
 LED* LED_STRIP;
@@ -35,6 +39,8 @@ void initServer(ESP8266WebServer* server, LED* strip) {
   SERVER->on("/setWakeUpSong", HTTP_GET, handleSetWakeUpSong);
 
   SERVER->on("/getCurrentWakeUpSong", getCurrentSong);
+
+  SERVER->on("/getSensorReading", getSensorReading);
 
   SERVER->onNotFound(handleNotFound);
 }
@@ -156,8 +162,28 @@ void handleSetWakeUpSong() {
   SERVER->send(303);
 }
 
-void getSensorData(){
+void getSensorReading()
+{
+  char tmpT[5];
+  char tmpH[5];
+  float tmpTF, tmpHF;
+  String lumen = String(sensor.smoothLumen());
+  tmpTF = sensor.smoothTempDHT();
+  tmpHF = sensor.smoothHumiDHT();
   
+  dtostrf(tmpTF, 4, 1, tmpT);
+  dtostrf(tmpHF, 4, 1, tmpH);
+  Serial.print(tmpT);
+  Serial.print("#");
+  Serial.print(tmpH);
+  Serial.print("#");
+  Serial.println(lumen);
+  SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
+  /* Units for sensor data:
+   * Temperature (tmpT): Celcius
+   * Humidity (tmpH): Percent
+   * Light (lumen): Lumen
+   */
 }
 
 void handleNotFound() {

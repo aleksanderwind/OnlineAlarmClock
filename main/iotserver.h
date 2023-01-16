@@ -8,6 +8,7 @@
 #include <ESP8266mDNS.h>       // Include the mDNS library
 #include "html_page.h"
 #include "LED_driver.h"
+#include "DHTsensor.h"
 
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
@@ -42,6 +43,6 @@ void getAlarmDateAndTime();
 
 void getCurrentSong();
 
-void getSensorData();
+void getSensorReading();
 
 #endif  // iotserver
