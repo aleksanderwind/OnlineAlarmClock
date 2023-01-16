@@ -63,7 +63,6 @@ float DHTsensor::smoothTempDHT() {
   
   // calculate and return the average: 
   avgTmp = totalTemp / numReadingsTemp;
-  //Serial.println(avgTmp);
   return avgTmp;
 }
 
@@ -101,7 +100,6 @@ float DHTsensor::smoothHumiDHT() {
   
   // calculate and return the average:
   avgHum = totalHumi / numReadingsHumi;
-  //Serial.println(avgHum);
   return avgHum;
 }
 
@@ -136,6 +134,5 @@ int DHTsensor::smoothLumen(){
   }
   // calculate the average:
   avgLum = totalLumen / numReadingsLumen;
-  //Serial.println(avgLum);
   return avgLum;
 }
