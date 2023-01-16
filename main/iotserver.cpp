@@ -1,9 +1,11 @@
 #include "iotserver.h"
 
-const int DHTPIN = 12;
-const int LDRPIN = A0; //find pin
+int debug = 0;
 
-DHTsensor sensor(DHTPIN,LDRPIN);
+int* DHTPIN;
+int* LDRPIN; //find pin
+
+DHTsensor* sensor;
 ESP8266WebServer* SERVER;
 
 LED* LED_STRIP;
@@ -15,7 +17,10 @@ String dateNotFormated = "";
 
 int currentSong = 0;
 
-void initServer(ESP8266WebServer* server, LED* strip) {
+void initServer(ESP8266WebServer* server, LED* strip, DHTsensor* SENSOR) {
+  
+  sensor = SENSOR;
+  
   SERVER = server;
 
   LED_STRIP = strip;
@@ -177,7 +182,9 @@ void getSensorReading()
   Serial.print("#");
   Serial.print(tmpH);
   Serial.print("#");
-  Serial.println(lumen);
+  Serial.print(lumen);
+  Serial.print(" RUN:");
+  Serial.println(debug);
   SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
   /* Units for sensor data:
    * Temperature (tmpT): Celcius
