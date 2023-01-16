@@ -139,6 +139,13 @@ const char index_html[] PROGMEM = R"rawliteral(
         <input class="set" type="submit" value="Set song">
     </form>
 
+    <p>Current day and time</p>
+    <p class = "inline" id = "currentDay"></p>
+    <p class = "inline">     </p>
+    <p class = "inline" id = "currentHour"></p>
+    <p class = "inline">;</p>
+    <p class = "inline" id = "currentMinute"></p><br>
+
     <script>
         window.addEventListener('load', getCurrentColor);
 
@@ -206,6 +213,24 @@ const char index_html[] PROGMEM = R"rawliteral(
                 }
             };
             xhr.open("GET", "/getCurrentWakeUpSong", true);
+            xhr.send();
+        }
+
+        const someInterval = setInterval(updatePage, 1000);
+
+        function updatePage(){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200) {
+                var val = this.responseText;
+                console.log(val)
+                var dayHourMinute = val.split("#");
+                document.getElementById("currentDay").innerHTML = dayHourMinute[0]
+                document.getElementById("currentHour").innerHTML = dayHourMinute[1]
+                document.getElementById("currentMinute").innerHTML = dayHourMinute[2]
+                }
+            };
+            xhr.open("GET", "/updatePage", true);
             xhr.send();
         }
 

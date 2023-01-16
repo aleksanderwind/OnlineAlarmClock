@@ -7,12 +7,19 @@
 #include "iotserver.h"
 #include "sensors.h"
 
+struct myTM currentTime;
+
 #define LED_PIN 14
 #define NUM_LEDS 5
 
 const int DHTPIN = 13;
 const int DHTTYPE = DHT11;
 const int photosens = A0;
+
+//declare NTP objects
+const char* ntpServer = "pool.ntp.org";
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, ntpServer);
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -37,6 +44,9 @@ void setup() {
   // init sensors (DHT11 and LDR)
   initSensors(&dht, photosens);
 
+  // init NTP to get time from a server
+  initNTP(&timeClient, &currentTime);
+
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
   initServer(&webserver, &led_strip);
 
@@ -53,4 +63,5 @@ void setup() {
 void loop() {
   // Check if a client has connected
   handleClients();
+  updateTime();
 }
