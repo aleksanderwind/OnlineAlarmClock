@@ -7,18 +7,14 @@
 #include <DHT.h>
 #include "DHTsensor.h"
 
-DHTsensor::DHTsensor(int dhtPin, int ldrPin):dht(dhtPin, DHT11)
+DHTsensor::DHTsensor(int dhtPin, int ldrPin):dht(dhtPin, DHT11) //constructor for DHTsensor object, along with creating an object of the DHT class
 {
   Serial.println(dhtPin);
   // Parameters for smooth temp
-  //numReadingsTemp = 5;
-  //float readingsTemp [numReadingsTemp];
   readIndexTemp = 0;
   totalTemp = 0;
 
   // Parameters for smooth humidity
-  //numReadingsHumi = 5;
-  //float readingsHumi [numReadingsHumi];
   readIndexHumi = 0;
   totalHumi = 0;
 
@@ -35,7 +31,6 @@ void DHTsensor::dhtBegin()
 }
 
 float DHTsensor::smoothTempDHT() {
-  //Serial.print("tempDebug ");
   /* Description
     Performs average of last N temperature readings (numReadingsTemp, defined in parameters at the beginning of doc).
     DHT sensor should be connected to a digital port.
@@ -73,8 +68,6 @@ float DHTsensor::smoothTempDHT() {
 }
 
 float DHTsensor::smoothHumiDHT() {
-    //Serial.print("humiDebug ");
-
   /* Description
     Performs average of last N humidity readings (numReadingsHumi, defined in parameters at the beginning of doc).
     DHT sensor should be connected to a digital port.
@@ -113,9 +106,7 @@ float DHTsensor::smoothHumiDHT() {
 }
 
 int DHTsensor::smoothLumen(){
-    //Serial.print("lumnDebug ");
-
-  /* Description
+   /* Description
   Performs average of last N lumen readings (numReadingsLumen, defined in parameters at the beginning of doc).
   Light dependent resistor (LDR) should be connected to an analog pin and supplied with 3.3V. 
   Input [int]: Pin for LDR (ldrPin), Value of resistor connected to the LDR (R)
@@ -129,8 +120,8 @@ int DHTsensor::smoothLumen(){
   
   // Conversion rule
   int photosensorVal = analogRead(ldrpin);
-  float Vout = float(photosensorVal) * (3.3 / float(1023));// Conversion analog to voltage
-  float Rldr = (R * (3.3 - Vout))/Vout; // Conversion voltage to resistance
+  float Vout = float(photosensorVal) * (float(3.3) / float(1023));// Conversion analog to voltage
+  float Rldr = (R * (float(3.3) - Vout))/Vout; // Conversion voltage to resistance
   float lumenVal=500/(Rldr/1000); // Conversion resitance to lumen
   // subtract last reading
   totalLumen = totalLumen - readingsLumen[readIndexLumen];
