@@ -1,17 +1,33 @@
 #include "LED_driver.h"
 
+/*
+Function to convert from hex-string to dec.
+INPUT: hex values in a string
+OUTPUT: long 
+Example:
+hexToDec("0000ff");
 
+> 255
+*/
 long hexToDec(String hexString) {
-  long decValue = 0;
+  long decValue = 0; // Initialize final value
   int nextInt;
 
+  // For each character in the string:
   for (int i = 0; i < hexString.length(); i++) {
-    nextInt = int(hexString.charAt(i));
-    if (nextInt >= 48 && nextInt <= 57) nextInt -= 48;
-    if (nextInt >= 65 && nextInt <= 70) nextInt -= 45;
-    if (nextInt >= 97 && nextInt <= 102) nextInt -= 87;
-    nextInt = constrain(nextInt, 0, 15);
-    decValue = (decValue * 16) + nextInt;
+    nextInt = int(hexString.charAt(i)); // The decimal value of the character is stored in nextInt
+    // If the decimal value of the character is between 48 and 57, it is a number between 0 and 9
+    if (nextInt >= 48 && nextInt <= 57) nextInt -= 48; // By subtracting 48 the actual number is found
+
+    // If the decimal value of the character is between 65 and 70, it is a capital letter between A and F. 
+    if (nextInt >= 65 && nextInt <= 70) nextInt -= 56; // Subtracting 56, a number between 10 and 15 is achieved
+
+    // If the decimal value of the character is between 97 and 102, it is a lower case letter between a and f. 
+    if (nextInt >= 97 && nextInt <= 102) nextInt -= 87; // Subtracting 87, a number between 10 and 15 is achieved
+
+    nextInt = constrain(nextInt, 0, 15); // We make sure the value is mapped between 0 and 15.
+
+    decValue = (decValue * 16) + nextInt; // For each time we get a new number, we bit shift with 4 (eq. to multiplying with 16)
   }
   return decValue;
 }
