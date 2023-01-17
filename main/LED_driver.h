@@ -21,7 +21,7 @@ public:
 
   void setLEDStrip(int r, int g, int b);
 
-  void setLEDStripHex(long hex);
+  void setLEDStripHex(long colorValue, float scaleBrightness = 1);
 
   void clear();
 };

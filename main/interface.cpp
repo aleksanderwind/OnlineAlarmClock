@@ -10,12 +10,14 @@
 /*  Control register (Refer to Table 2 of MAX7219 documentation) 
     Some elements have been left out.
 */
-#define CTRL_DECODEMODE 0x09
+#define CTRL_DECODEMODE 0x09 
 #define CTRL_INTENSITY 0x0A
 #define CTRL_SCANLIMIT 0x0B
 #define CTRL_SHUTDOWN 0x0C
 #define CTRL_DISPLAYTEST 0x0F
 /* End of control register*/
+
+LED* led_Strip; // variable for importing led class
 
 #define ASCII_OFFSET 45   // Offset used to map char to index in asciiTableRef (see header file)
 #define DISPLAY_LENGTH 8  // One module has 8 digits/segments
@@ -202,9 +204,51 @@ int SegmentDriver::sendSPI(volatile byte data, volatile byte instruction) {
   return 0;
 }
 
+void initLEDInInterface(LED* strip){
+  led_Strip = strip;
+}
+
 void readSensors(data* sensorData, DHTsensor* sensor){
   sensorData->temperature = sensor->smoothTempDHT();
   delay(300);
   sensorData->humidity = sensor->smoothHumiDHT();
   sensorData->lightLevel = sensor->smoothLumen();
+}
+
+void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong)
+{  
+  if((currentAlarm->inEpoch - currentTime->inEpoch) <= timeBeforeAlarm*60){ // X minutes before the alarm, start turning on the LED
+  // brightness as sigmoid function, =0 before alarm, =1 after alarm.
+  float ledBrightness = 1.0 / (1.0 + exp(((currentAlarm->inEpoch - currentTime->inEpoch)/(timeBeforeAlarm*5.0) - 5.0))); 
+  //float ledBrightness = 1.0 - (1.0 / (timeBeforeAlarm*60))*(currentAlarm->inEpoch - currentTime->inEpoch);
+  led_Strip->setLEDStripHex(colorValue,ledBrightness);
+  Serial.println(ledBrightness);
+  Serial.println(currentAlarm->inEpoch);
+  Serial.println(currentTime->inEpoch);
+  }
+  if((currentAlarm->inEpoch) <= (currentTime->inEpoch)){
+    if (currentSong == 1){
+      Play_Pirates();
+    }
+    else if(currentSong == 2){
+      Play_CrazyFrog();
+    }
+    else if(currentSong == 3){
+      Play_MarioUW();
+    }
+    else if(currentSong == 4){
+      Play_PinkPanther();
+    }
+
+  }
+}
+
+long toEpochTime(int currentYear, int currentMonth,int currentMonthDay, int currentHour, int currentMinute){
+  /* Description
+  Function that converts date/time format in year/month/day/hour/minute to epoch time in seconds since 1970/01/01. 
+  Input[int, int, int, int, int]: Current time in year, month, day, hour and minute.
+  Output [long]: Current time in epoch time.
+  */
+  setTime(currentHour,currentMinute, 0, currentMonthDay, currentMonth, currentYear); // hour,min,sec,day,month,year
+  return now();
 }

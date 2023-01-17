@@ -6,6 +6,9 @@ int* LDRPIN; //find pin
 DHTsensor* sensor;
 
 myTM* CurrentTime;
+myTM* CurrentAlarm;
+
+long* ColorValue;
 
 data* SensorData;
 
@@ -23,7 +26,7 @@ String dateNotFormated = "";
 
 String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-int currentSong = 0;
+int* CurrentSong;
 
 void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR, data* sensorData) {
   SensorData = sensorData;
@@ -63,11 +66,17 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DH
   SERVER->onNotFound(handleNotFound);
 }
 
-void initNTP(NTPClient* timeClient, myTM* currentTime){
+void initNTP(NTPClient* timeClient, myTM* currentTime, myTM* currentAlarm){
   TimeClient = timeClient;
   CurrentTime = currentTime;
+  CurrentAlarm = currentAlarm;
   TimeClient->begin();
   TimeClient->setTimeOffset(3600);
+}
+
+void initVars(long* colorValue, int* currentSong){
+  ColorValue = colorValue;
+  CurrentSong = currentSong;
 }
 
 void startServer() {
@@ -138,10 +147,10 @@ void handleStaticColor() {
   String incomingHex = SERVER->arg("staticColor");
   CURRENT_COLOR = incomingHex;
   String staticColor = incomingHex.substring(1).c_str();
-  long colorValue = hexToDec(staticColor);
+  *ColorValue = hexToDec(staticColor);
   Serial.println(staticColor);
-  Serial.println(colorValue, HEX);
-  LED_STRIP->setLEDStripHex(colorValue);
+  Serial.println(*ColorValue, HEX);
+  LED_STRIP->setLEDStripHex(*ColorValue);
   delay(10);
   //FastLED.show();
   SERVER->sendHeader("Location", "/");
@@ -151,18 +160,28 @@ void handleStaticColor() {
 void handleSetAlarm() {
   timeNotFormated = SERVER->arg("alarmTime");
   dateNotFormated = SERVER->arg("alarmDate");
+  
+  /* DEBUG
   Serial.println(dateNotFormated);
   Serial.println(timeNotFormated);
-  int hour = timeNotFormated.substring(0, 2).toInt();
-  int minute = timeNotFormated.substring(3, 5).toInt();
-  int day = dateNotFormated.substring(8, 10).toInt();
-  int month = dateNotFormated.substring(5, 7).toInt();
-  int year = dateNotFormated.substring(0, 4).toInt();
+  */
+  
+  CurrentAlarm->hour = timeNotFormated.substring(0, 2).toInt();
+  CurrentAlarm->minute = timeNotFormated.substring(3, 5).toInt();
+  CurrentAlarm->day = dateNotFormated.substring(8, 10).toInt();
+  CurrentAlarm->month = dateNotFormated.substring(5, 7).toInt();
+  CurrentAlarm->year = dateNotFormated.substring(0, 4).toInt();
+
+  CurrentAlarm->inEpoch = toEpochTime(CurrentAlarm->year,CurrentAlarm->month,CurrentAlarm->day,CurrentAlarm->hour,CurrentAlarm->minute);
+  
+  /* DEBUG
   Serial.println(year, DEC);
   Serial.println(month, DEC);
   Serial.println(day, DEC);
   Serial.println(hour, DEC);
   Serial.println(minute, DEC);
+  */
+  
   SERVER->sendHeader("Location", "/");
   SERVER->send(303);
 }
@@ -177,19 +196,19 @@ void getAlarmDateAndTime() {
 }
 
 void getCurrentSong() {
-  SERVER->send(STATUSCODE_OK, "text/plain", String(currentSong));
+  SERVER->send(STATUSCODE_OK, "text/plain", String(*CurrentSong));
 }
 
 void handleSetWakeUpSong() {
-  currentSong = SERVER->arg("songID").toInt();
-  Serial.println(currentSong);
+  *CurrentSong = SERVER->arg("songID").toInt();
+  Serial.println(*CurrentSong);
   SERVER->sendHeader("Location", "/");
   SERVER->send(303);
 }
 
 void updatePage(){
   readSensors(SensorData, sensor);
-  Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
+  //Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
   SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
 }
 
@@ -198,6 +217,7 @@ void updateTime(){
   CurrentTime->hour = TimeClient->getHours();
   CurrentTime->minute = TimeClient->getMinutes();
   CurrentTime->day = TimeClient->getDay();
+  CurrentTime->inEpoch = TimeClient->getEpochTime();
 
   SEGMENT->setClock(CurrentTime->hour, CurrentTime->minute);
 }

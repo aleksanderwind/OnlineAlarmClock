@@ -10,7 +10,13 @@
 #include "themes.h"
 
 struct myTM currentTime;
+struct myTM currentAlarm;
 struct data sensorData;
+
+long colorValue = 0;
+int currentSong;
+
+int timeBeforeAlarm = 1;
 
 #define LED_PIN 4 //D2 on ESP8266
 #define NUM_LEDS 5
@@ -51,10 +57,14 @@ void setup() {
   delay(10);
   Serial.println();
 
+  initLEDInInterface(&led_strip);
+
+  initVars(&colorValue, &currentSong);
+
   initBuzzer(BUZZER_PIN);
 
   // init NTP to get time from a server
-  initNTP(&timeClient, &currentTime);
+  initNTP(&timeClient, &currentTime, &currentAlarm);
 
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
   initServer(&webserver, &led_strip, &display, &sens, &sensorData);
@@ -75,4 +85,6 @@ void loop() {
   // Check if a client has connected
   handleClients();
   updateTime();
+  AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong);
+  delay(500);
 }
