@@ -2,9 +2,18 @@
 #define interface_h
 
 #include <Arduino.h>
+#include "DHTsensor.h"
+#include "LED_driver.h"
+#include "themes.h"
+#include <TimeLib.h>
 
-struct data {
-  int 
+struct myTM {
+  int hour;
+  int minute;
+  int day;
+  int month;
+  long year;
+  unsigned long inEpoch;
 };
 
 const static byte asciiTableRef[] PROGMEM = {
@@ -37,4 +46,13 @@ public:
   int setClock(int hour, int minute);
   void clear();
 };
+
+void initLEDInInterface(LED* strip);
+
+void readSensors(data* sensorData, DHTsensor* sensor);
+
+void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong);
+
+long toEpochTime(int currentYear, int currentMonth,int currentMonthDay, int currentHour, int currentMinute);
+
 #endif  // interface_h

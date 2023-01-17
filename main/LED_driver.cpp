@@ -49,7 +49,7 @@ void LED::setLEDStrip(int r, int g, int b) {
   STRIP->show();
 }
 
-void LED::setLEDStripHex(long colorValue) {
+void LED::setLEDStripHex(long colorValue, float scaleBrightness) {
   /*
    * Description
    * Takes a long value at sets the RGB strip to that color.
@@ -64,9 +64,9 @@ void LED::setLEDStripHex(long colorValue) {
   */
 
   int r, g, b;
-  r = colorValue >> 16;
-  g = (colorValue & 0x00FF00) >> 8;
-  b = colorValue & 0xFF;
+  r = (int)((colorValue >> 16)*scaleBrightness);
+  g = (int)(((colorValue & 0x00FF00) >> 8)*scaleBrightness);
+  b = (int)((colorValue & 0xFF)*scaleBrightness);
   setLEDStrip(r, g, b);
 }
 
