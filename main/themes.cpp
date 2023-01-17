@@ -1,5 +1,7 @@
 #include "themes.h"
 
+boolean itr = false; //interrupt
+
 /*
  * The themes given below were converted from the piano sheet music 
  * Code by : B.Aswinth Raj
@@ -144,6 +146,8 @@ void initBuzzer(int* buzz_pin){
 
 void Play_Pirates()
 { 
+  
+  itr = false;
 
   for (int thisNote = 0; thisNote < (sizeof(Pirates_note)/sizeof(int)); thisNote++) {
 
@@ -158,6 +162,8 @@ void Play_Pirates()
     delay(pauseBetweenNotes);
 
     noTone(buzzer_pin); //stop music on pin 2 
+    
+    if(itr){break;}
 
     }
 
@@ -166,6 +172,8 @@ void Play_Pirates()
 void Play_CrazyFrog()
 {
 
+  itr = false;
+  
   for (int thisNote = 0; thisNote < (sizeof(CrazyFrog_note)/sizeof(int)); thisNote++) {
 
 
@@ -180,13 +188,16 @@ void Play_CrazyFrog()
 
     noTone(buzzer_pin); //stop music on pin 2 
 
+    if(itr){break;}
+    
     }
 
 }
 
 void Play_MarioUW()
 {
-
+    itr = false;
+  
     for (int thisNote = 0; thisNote < (sizeof(MarioUW_note)/sizeof(int)); thisNote++) {
 
 
@@ -200,6 +211,8 @@ void Play_MarioUW()
     delay(pauseBetweenNotes);
 
     noTone(buzzer_pin); //stop music on pin 2 
+      
+    if(itr){break;}
 
     }
 
@@ -207,7 +220,8 @@ void Play_MarioUW()
 
 void Play_Titanic()
 {
-
+    itr = false;
+  
     for (int thisNote = 0; thisNote < (sizeof(Titanic_note)/sizeof(int)); thisNote++) {
 
 
@@ -222,12 +236,20 @@ void Play_Titanic()
 
     noTone(buzzer_pin); //stop music on pin 2 
 
+    if(itr){break;}
+      
     }
 
 }
 
+void interrupt()
+{
+  itr = true;
+}
+
 void Play_PinkPanther()
 {
+    itr = false;
 
     for (int thisNote = 0; thisNote < (sizeof(PinkPanther_note)/sizeof(int)); thisNote++) {
 
@@ -243,6 +265,8 @@ void Play_PinkPanther()
 
     noTone(buzzer_pin); //stop music on pin 2 
 
+    if(itr){break;}
+      
     }
 
 }
