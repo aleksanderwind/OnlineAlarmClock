@@ -48,7 +48,7 @@ ESP8266WebServer webserver(80);
 ESP8266WiFiMulti wifiMulti;
 
 void setup() {
-  attachInterrupt(digitalPinToInterrupt(D1), ISR, HIGH);
+  attachInterrupt(digitalPinToInterrupt(5), ISR, HIGH);
   Serial.begin(115200);
   delay(10);
   Serial.println();
