@@ -16,6 +16,8 @@ struct data sensorData;
 long colorValue = 0;
 int currentSong;
 
+//extern bool itr;
+
 int timeBeforeAlarm = 1;
 
 #define LED_PIN 4  //D2 on ESP8266
@@ -28,7 +30,7 @@ int timeBeforeAlarm = 1;
 #define DHTPIN 12  //D6 on ESP8266
 #define LDRPIN A0
 
-const int BUZZER_PIN = 5;
+const int BUZZER_PIN = 3;
 
 SegmentDriver display = SegmentDriver(DIN, CLK, CS);
 
@@ -52,16 +54,18 @@ ESP8266WebServer webserver(80);
 // Create an instance of the wifiMulti
 ESP8266WiFiMulti wifiMulti;
 
-void ICACHE_RAM_ATTR ISR()
+void ICACHE_RAM_ATTR isr()
 {
   interrupt();
 }
 
 void setup() {
-  attachInterrupt(digitalPinToInterrupt(5), ISR, HIGH);
+  attachInterrupt(digitalPinToInterrupt(5), isr, HIGH);
   Serial.begin(115200);
   delay(10);
   Serial.println();
+
+  currentAlarm.inEpoch = 11673954810;
 
   initLEDInInterface(&led_strip);
 
@@ -92,5 +96,5 @@ void loop() {
   handleClients();
   updateTime();
   AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong);
-  delay(500);
+  //delay(500);
 }

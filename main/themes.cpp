@@ -2,7 +2,7 @@
 
 int buzzer_pin;
 
-boolean itr = false; //interrupt
+bool itr = false; //interrupt
 
 /*
  * The themes given below were converted from the piano sheet music 
@@ -246,6 +246,7 @@ void Play_Titanic()
 
 void interrupt()
 {
+  Serial.println("I interrupted, SORRY!");
   itr = true;
 }
 

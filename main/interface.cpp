@@ -7,6 +7,8 @@
 
 #include "interface.h"
 
+extern bool itr;
+
 LED* led_Strip; // variable for importing led class
 
 /* 
@@ -243,7 +245,8 @@ void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* cur
   Serial.println(currentAlarm->inEpoch);
   Serial.println(currentTime->inEpoch);
   }
-  if((currentAlarm->inEpoch) <= (currentTime->inEpoch)){
+  if(!itr){
+    if((currentAlarm->inEpoch) <= (currentTime->inEpoch)){
     if (currentSong == 1){
       Play_Pirates();
     }
@@ -257,8 +260,12 @@ void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* cur
       Play_PinkPanther();
     }
 
+    }
   }
+    
+    
 }
+  
 
 long toEpochTime(int currentYear, int currentMonth,int currentMonthDay, int currentHour, int currentMinute){
   /* Description

@@ -4,6 +4,8 @@
 #include "pitches.h"
 #include "Arduino.h"
 
+extern bool itr; //interrupt
+
 /*
  * The themes given below were converted from the piano sheet music 
  * Code by : B.Aswinth Raj
