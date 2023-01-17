@@ -7,18 +7,6 @@
 
 #include "interface.h"
 
-/*  Control register (Refer to Table 2 of MAX7219 documentation) 
-    Some elements have been left out.
-*/
-#define CTRL_DECODEMODE 0x09
-#define CTRL_INTENSITY 0x0A
-#define CTRL_SCANLIMIT 0x0B
-#define CTRL_SHUTDOWN 0x0C
-#define CTRL_DISPLAYTEST 0x0F
-/* End of control register*/
-
-#define ASCII_OFFSET 45   // Offset used to map char to index in asciiTableRef (see header file)
-#define DISPLAY_LENGTH 8  // One module has 8 digits/segments
 /* 
 Class initializer 
 Takes 4 inputs:
@@ -66,7 +54,7 @@ int SegmentDriver::turnOn() {
   return sendSPI(1, CTRL_SHUTDOWN);
 }
 
-// Turn of the display
+// Turn off the display
 int SegmentDriver::turnOff() {
   return sendSPI(0, CTRL_SHUTDOWN);
 }
@@ -95,6 +83,7 @@ Set the scan limit of the display
 Input: value (integer between 0-7)
 */
 int SegmentDriver::setScanLimit(int limit) {
+  // If the given limit is not in the range of 0-7, return -1 indicating a failure.
   if (limit < 0 || limit > 7) {
     return -1;
   }
@@ -124,13 +113,16 @@ int SegmentDriver::setChar(int place, char chr, bool dot = false) {
   val -= ASCII_OFFSET;
 
   // If the final value is not an index in the asciiTableRef, we just use val = 2, 
-  // which is equivivalent to a space (" ")
+  // which is equivivalent to a space (" ").
   if (val < 0 || val > sizeof(asciiTableRef)) {
     val = 2;
   }
 
+  // Look into the asciiTableRef and get the corresponding byte.
   byte asciiRef = pgm_read_byte_near(asciiTableRef + val);
 
+  // If the character should be printed with a dot (e.g 7.), 
+  // add the dot to the byte. 
   if (dot) {
     asciiRef |= B10000000;
   }
@@ -150,14 +142,28 @@ If the string is longer than 8 characters, only the first 8 characters are shown
 returns 0 if OK. Anything other than 0 is assumed an error. 
 */
 int SegmentDriver::setString(String string) {
-  int len = (sizeof(string) > 9) ? 8 : sizeof(string) - 1;
+  // Check if the string is longer than 8 characters.
+  // sizeof(string) includes the end-of-line character '\0',
+  // thus the length becomes one longer than the actual string. 
+  // Subtracting 1 from the sizeof() corrects this. 
+  int len = (sizeof(string) - 1 > DISPLAY_LENGTH) ? DISPLAY_LENGTH : sizeof(string) - 1;
 
+  // Start sending characters, starting from the left.
   for (int i = 0; i < len; i++) {
     setChar((DISPLAY_LENGTH - 1) - i, string[i]);
   }
   return 0;
 }
 
+/*
+Specific function to display the clock in the middle of the display,
+with a dot seperating the numbers. 
+The clock is in 24hr format.
+Inputs:
+interger hour, minute. 
+
+Hour must be in the range [0-23] and minute must be [0-59].
+*/
 int SegmentDriver::setClock(int hour, int minute){  
   if (hour < 0 || hour > 23) {
     return -1;
@@ -167,12 +173,23 @@ int SegmentDriver::setClock(int hour, int minute){
     return -1;
   }
 
+  // Check whether we should add a 0 before the hour number. 
+  // If the hour is greater than or equal to 10, this is not necessary.
   String hr = (hour >= 10) ? String(hour) : "0" + String(hour);
+
+  // Check whether we should add a 0 before the minute number. 
+  // If the minute is greater than or equal to 10, this is not necessary.
   String min = (minute >= 10) ? String(minute) : "0" + String(minute);
 
+  // Send the first number of hour
   setChar(5, hr[0]);
+  // Send the second number of hour, with dot = true.
+  // This will print the dot seperating hour and minutes.
   setChar(4, hr[1], true);
+
+  // Send the first number of minute
   setChar(3, min[0]);
+  // Send the final number of minute
   setChar(2, min[1]);
 
 }

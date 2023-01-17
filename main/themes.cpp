@@ -1,5 +1,8 @@
 #include "themes.h"
 
+int buzzer_pin;
+
+
 /*
  * The themes given below were converted from the piano sheet music 
  * Code by : B.Aswinth Raj
@@ -138,7 +141,7 @@ int PinkPanther_duration[] = {
 
 //###########End of Pink Panther#############//
 
-void initBuzzer(int* buzz_pin){
+void initBuzzer(int buzz_pin){
   buzzer_pin = buzz_pin;
 }
 

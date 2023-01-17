@@ -4,8 +4,6 @@
 #include "pitches.h"
 #include "Arduino.h"
 
-int buzzer_pin;
-
 
 /*
  * The themes given below were converted from the piano sheet music 
@@ -14,7 +12,7 @@ int buzzer_pin;
  * Website: CircuitDigest.com
  */
 
-void initBuzzer();
+void initBuzzer(int buzz_pin);
 
 void Play_Pirates();
 void Play_CrazyFrog();

@@ -13,9 +13,11 @@
 #include "interface.h"
 #include "DHTsensor.h"
 
+// Two of the status codes that are commonly used throughout this project
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
 
+// A simple time struct that can store hour, minute, day, month and year. 
 struct myTM {
   int hour;
   int minute;
