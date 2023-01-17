@@ -241,9 +241,11 @@ void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* cur
   float ledBrightness = 1.0 / (1.0 + exp(((currentAlarm->inEpoch - currentTime->inEpoch)/(timeBeforeAlarm*5.0) - 5.0))); 
   //float ledBrightness = 1.0 - (1.0 / (timeBeforeAlarm*60))*(currentAlarm->inEpoch - currentTime->inEpoch);
   led_Strip->setLEDStripHex(colorValue,ledBrightness);
+  /* DEBUG
   Serial.println(ledBrightness);
   Serial.println(currentAlarm->inEpoch);
   Serial.println(currentTime->inEpoch);
+  */
   }
   if(!itr){
     if((currentAlarm->inEpoch) <= (currentTime->inEpoch)){

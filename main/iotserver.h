@@ -23,7 +23,7 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DH
 
 void initNTP(NTPClient* timeClient, myTM* currentTime, myTM* currentAlarm);
 
-void initVars(long* colorValue, int* currentSong);
+void initVars(long* colorValue, int* currentSong, int* timeInterval);
 
 void startServer();
 

@@ -81,7 +81,15 @@ const char index_html[] PROGMEM = R"rawliteral(
         height: 21px;
         width: fit-content;
         background-color: aqua;
-        margin-left: 10px;
+        margin-left: 11.5px;
+        margin-bottom: 2px;
+    }
+
+    input[type="number"]{
+        height: 21px;
+        width: 50px;
+        margin-left: 4px;
+        margin-right: 2px;
     }
 
     p.inline {
@@ -123,7 +131,9 @@ const char index_html[] PROGMEM = R"rawliteral(
             <label for="alarmDate"> Select date for alarm: </label>
             <input type="date" id="alarmDate" name="alarmDate"><br>
             <label for="alarmTime"> Select time for alarm: </label>
-            <input type="time" id="alarmTime" name="alarmTime">
+            <input type="time" id="alarmTime" name="alarmTime"><br>
+            <label for="timeInterval">Select fade in interval: </label>
+            <input type="number" id="timeInterval" name="timeInterval">
             <input class = set type="submit" value = "Set alarm"><br>
         </form>
     </div>
@@ -203,6 +213,7 @@ const char index_html[] PROGMEM = R"rawliteral(
                 document.getElementById('alarmTime').value = dateAndTime[1];
                 document.getElementById('dateOfAlarm').innerHTML = dateAndTime[0];
                 document.getElementById('timeOfAlarm').innerHTML = dateAndTime[1];
+                document.getElementById('timeInterval').value = dateAndTime[2];
                 }
             };
             xhr.open("GET", "/getAlarmDateAndTime", true);
@@ -235,7 +246,7 @@ const char index_html[] PROGMEM = R"rawliteral(
             xhr.send();
         }
 
-        const someInterval = setInterval(updatePage, 10000);
+        const someInterval = setInterval(updatePage, 4000);
 
         function updatePage(){
             var xhr = new XMLHttpRequest();

@@ -18,7 +18,7 @@ int currentSong;
 
 //extern bool itr;
 
-int timeBeforeAlarm = 1;
+int timeBeforeAlarm;
 
 #define LED_PIN 4  //D2 on ESP8266
 #define NUM_LEDS 5
@@ -69,7 +69,7 @@ void setup() {
 
   initLEDInInterface(&led_strip);
 
-  initVars(&colorValue, &currentSong);
+  initVars(&colorValue, &currentSong, &timeBeforeAlarm);
 
   initBuzzer(BUZZER_PIN);
 

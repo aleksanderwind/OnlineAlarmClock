@@ -11,6 +11,8 @@ myTM* CurrentAlarm;
 
 long* ColorValue;
 
+extern bool itr;
+
 data* SensorData;
 
 ESP8266WebServer* SERVER; // Define SERVER as a pointer to a WebServer object.
@@ -30,6 +32,8 @@ String dateNotFormated = "";
 String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 int* CurrentSong; // Set up variable for selecting what song to play when the alarm rings. Default is song = 0.
+
+int* TimeInterval;
 
 void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR, data* sensorData) {
   //Initializes all needed global variables and server handles
@@ -82,9 +86,10 @@ void initNTP(NTPClient* timeClient, myTM* currentTime, myTM* currentAlarm){
   TimeClient->setTimeOffset(3600);
 }
 
-void initVars(long* colorValue, int* currentSong){
+void initVars(long* colorValue, int* currentSong, int* timeInterval){
   ColorValue = colorValue;
   CurrentSong = currentSong;
+  TimeInterval = timeInterval;
 }
 
 void startServer() {
@@ -175,9 +180,11 @@ void handleStaticColor() {
 
 //Sets alarm to user defined time
 void handleSetAlarm() {
+  itr = false;
   timeNotFormated = SERVER->arg("alarmTime");
   dateNotFormated = SERVER->arg("alarmDate");
-  
+  *TimeInterval = SERVER->arg("timeInterval").toInt();
+    
   /* DEBUG
   Serial.println(dateNotFormated);
   Serial.println(timeNotFormated);
@@ -210,7 +217,7 @@ void getCurrentColor() {
 
 //returns time and date of currently set alarm
 void getAlarmDateAndTime() {
-  SERVER->send(STATUSCODE_OK, "text/plain", dateNotFormated + "#" + timeNotFormated);
+  SERVER->send(STATUSCODE_OK, "text/plain", dateNotFormated + "#" + timeNotFormated + "#" + String(*TimeInterval));
   //Serial.println(dateNotFormated + "#" + timeNotFormated);
 }
 
