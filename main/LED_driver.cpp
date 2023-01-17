@@ -2,6 +2,9 @@
 
 /*
 Function to convert from hex-string to dec.
+Based on B. Rugg's (@benrugg) implementation from their GitHub Repository Arduino-Hex-Decimal-Conversion
+url: https://github.com/benrugg/Arduino-Hex-Decimal-Conversion (2015)
+Some changes have been made.
 INPUT: hex values in a string
 OUTPUT: long 
 Example:
