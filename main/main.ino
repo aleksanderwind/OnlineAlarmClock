@@ -52,7 +52,13 @@ ESP8266WebServer webserver(80);
 // Create an instance of the wifiMulti
 ESP8266WiFiMulti wifiMulti;
 
+void ICACHE_RAM_ATTR ISR()
+{
+  interrupt();
+}
+
 void setup() {
+  attachInterrupt(digitalPinToInterrupt(5), ISR, HIGH);
   Serial.begin(115200);
   delay(10);
   Serial.println();
