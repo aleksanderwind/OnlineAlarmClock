@@ -10,6 +10,13 @@
 #include "themes.h"
 
 struct myTM currentTime;
+struct myTM currentAlarm;
+struct data sensorData;
+
+long colorValue = 0;
+int currentSong;
+
+int timeBeforeAlarm = 1;
 
 #define LED_PIN 4  //D2 on ESP8266
 #define NUM_LEDS 5
@@ -21,8 +28,7 @@ struct myTM currentTime;
 #define DHTPIN 12  //D6 on ESP8266
 #define LDRPIN A0
 
-const int BUZZER_PIN = 9;
-
+const int BUZZER_PIN = 5;
 
 SegmentDriver display = SegmentDriver(DIN, CLK, CS);
 
@@ -37,8 +43,8 @@ Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB);
 
 LED led_strip(NUM_LEDS, LED_PIN, &strip);
 
-String SSID = "Jesper";
-String PASSWORD = "12345677";
+String SSID = "AndroidAP";
+String PASSWORD = "12345689";
 
 // Create an instance of the server
 ESP8266WebServer webserver(80);
@@ -46,18 +52,28 @@ ESP8266WebServer webserver(80);
 // Create an instance of the wifiMulti
 ESP8266WiFiMulti wifiMulti;
 
+void ICACHE_RAM_ATTR ISR()
+{
+  interrupt();
+}
+
 void setup() {
+  attachInterrupt(digitalPinToInterrupt(5), ISR, HIGH);
   Serial.begin(115200);
   delay(10);
   Serial.println();
 
+  initLEDInInterface(&led_strip);
+
+  initVars(&colorValue, &currentSong);
+
   initBuzzer(BUZZER_PIN);
 
   // init NTP to get time from a server
-  initNTP(&timeClient, &currentTime);
+  initNTP(&timeClient, &currentTime, &currentAlarm);
 
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
-  initServer(&webserver, &led_strip, &display, &sens);
+  initServer(&webserver, &led_strip, &display, &sens, &sensorData);
 
   // Connect to the wifi using the set SSID and PASSWORD
   connectToWifi(SSID, PASSWORD, &wifiMulti);
@@ -75,4 +91,6 @@ void loop() {
   // Check if a client has connected
   handleClients();
   updateTime();
+  AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong);
+  delay(500);
 }

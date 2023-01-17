@@ -3,6 +3,12 @@
 
 #include <DHT.h>
 
+struct data {
+  float temperature;
+  float humidity;
+  float lightLevel;
+};
+
 class DHTsensor
 {
   private:
@@ -31,7 +37,7 @@ class DHTsensor
     DHTsensor (int , int );
     float smoothTempDHT();
     float smoothHumiDHT();
-    int smoothLumen();
+    float smoothLumen();
     void dhtBegin();
 };
 

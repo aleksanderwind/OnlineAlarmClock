@@ -2,6 +2,10 @@
 #define interface_h
 
 #include <Arduino.h>
+#include "DHTsensor.h"
+#include "LED_driver.h"
+#include "themes.h"
+#include <TimeLib.h>
 
 /*  Control register codes (Refer to Table 2 of MAX7219 documentation) 
     Some elements have been left out.
@@ -12,6 +16,16 @@
 #define CTRL_SHUTDOWN 0x0C
 #define CTRL_DISPLAYTEST 0x0F
 /* End of control register*/
+
+// A simple time struct that can store hour, minute, day, month and year. 
+struct myTM {
+  int hour;
+  int minute;
+  int day;
+  int month;
+  long year;
+  unsigned long inEpoch;
+};
 
 #define ASCII_OFFSET 45   // Offset used to map char to index in asciiTableRef (see header file)
 #define DISPLAY_LENGTH 8  // One module has 8 digits/segments
@@ -55,4 +69,13 @@ public:
   int setClock(int hour, int minute);
   void clear();
 };
+
+void initLEDInInterface(LED* strip);
+
+void readSensors(data* sensorData, DHTsensor* sensor);
+
+void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong);
+
+long toEpochTime(int currentYear, int currentMonth,int currentMonthDay, int currentHour, int currentMinute);
+
 #endif  // interface_h

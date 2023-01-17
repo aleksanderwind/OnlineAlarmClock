@@ -88,6 +88,11 @@ const char index_html[] PROGMEM = R"rawliteral(
         display: inline;
     }
 
+    b.big {
+        font-size: 200%;
+        color: rgb(208, 255, 0);
+    }
+
 </style>
 
 <body>
@@ -139,7 +144,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         <label for="song3">Song 3</label>
         <input type="radio" id="song4" name="songID" value="4">
         <label for="song4">Song 4</label>
-        <input class="set" type="submit" value="Set song">
+        <input class="set" type="submit" value="Set song"><br><br>
     </form>
 
     <p>Current day and time</p>
@@ -148,6 +153,17 @@ const char index_html[] PROGMEM = R"rawliteral(
     <p class = "inline" id = "currentHour"></p>
     <p class = "inline">;</p>
     <p class = "inline" id = "currentMinute"></p><br>
+
+    <b class = "big"> Data</b><br>
+    <p class ="inline"> Temperature: </p>
+    <p class = "inline" id="temperature"></p>
+    <p class ="inline"> &#x2103;</p><br>
+    <p class ="inline"> Humidity: </p>
+    <p class = "inline" id="humidity"></p>
+    <p class ="inline"> %</p><br>
+    <p class ="inline"> Light level: </p>
+    <p class = "inline" id="ligthLevel"></p>
+    <p class ="inline"> lm</p>
 
     <script>
         window.addEventListener('load', getCurrentColor);
@@ -219,7 +235,7 @@ const char index_html[] PROGMEM = R"rawliteral(
             xhr.send();
         }
 
-        const someInterval = setInterval(updatePage, 1000);
+        const someInterval = setInterval(updatePage, 10000);
 
         function updatePage(){
             var xhr = new XMLHttpRequest();
@@ -227,10 +243,13 @@ const char index_html[] PROGMEM = R"rawliteral(
                 if (this.readyState == 4 && this.status == 200) {
                 var val = this.responseText;
                 console.log(val)
-                var dayHourMinute = val.split("#");
-                document.getElementById("currentDay").innerHTML = dayHourMinute[0]
-                document.getElementById("currentHour").innerHTML = dayHourMinute[1]
-                document.getElementById("currentMinute").innerHTML = dayHourMinute[2]
+                var dayHourMinuteTempHumLum = val.split("#");
+                document.getElementById("currentDay").innerHTML = dayHourMinuteTempHumLum[0];
+                document.getElementById("currentHour").innerHTML = dayHourMinuteTempHumLum[1];
+                document.getElementById("currentMinute").innerHTML = dayHourMinuteTempHumLum[2];
+                document.getElementById("temperature").innerHTML = dayHourMinuteTempHumLum[3];
+                document.getElementById("humidity").innerHTML = dayHourMinuteTempHumLum[4];
+                document.getElementById("lightLevel").innerHTML = dayHourMinuteTempHumLum[5];
                 }
             };
             xhr.open("GET", "/updatePage", true);

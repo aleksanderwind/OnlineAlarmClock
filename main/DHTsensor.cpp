@@ -41,7 +41,7 @@ float DHTsensor::smoothTempDHT() {
     >>> smoothTempDHT()
     22.4
   */
-  float avgTmp;
+  float avgTmp = 0;
   
   // subtract last reading
   totalTemp = totalTemp - readingsTemp[readIndexTemp];
@@ -103,8 +103,10 @@ float DHTsensor::smoothHumiDHT() {
   return avgHum;
 }
 
-int DHTsensor::smoothLumen(){
-   /* Description
+float DHTsensor::smoothLumen(){
+    //Serial.print("lumnDebug ");
+
+  /* Description
   Performs average of last N lumen readings (numReadingsLumen, defined in parameters at the beginning of doc).
   Light dependent resistor (LDR) should be connected to an analog pin and supplied with 3.3V. 
   Input [int]: Pin for LDR (ldrPin), Value of resistor connected to the LDR (R)

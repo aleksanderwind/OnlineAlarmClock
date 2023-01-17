@@ -17,20 +17,13 @@
 #define STATUSCODE_OK 200
 #define STATUSCODE_SEEOTHER 303
 
-// A simple time struct that can store hour, minute, day, month and year. 
-struct myTM {
-  int hour;
-  int minute;
-  int day;
-  int month;
-  long year;
-};
-
 void connectToWifi(String ssid, String password, ESP8266WiFiMulti* wifiMulti);
 
-void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* sensor);
+void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR, data* SensorData);
 
-void initNTP(NTPClient* timeClient, myTM* currentTime);
+void initNTP(NTPClient* timeClient, myTM* currentTime, myTM* currentAlarm);
+
+void initVars(long* colorValue, int* currentSong);
 
 void startServer();
 
