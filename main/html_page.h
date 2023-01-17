@@ -1,5 +1,8 @@
 #ifndef html_page_h
 #define html_page_h
+/*
+* Define html page and store it in flash memory.
+*/
 const char index_html[] PROGMEM = R"rawliteral(
 <html>
 

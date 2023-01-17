@@ -1,32 +1,35 @@
 #include "iotserver.h"
 
+// Define DHT pin and LDR pin (light dependend resistor)
 int* DHTPIN;
 int* LDRPIN;
 
-DHTsensor* sensor;
+DHTsensor* sensor; // Define sensor as a pointer to a DHTsensor object.
 
-myTM* CurrentTime;
+myTM* CurrentTime; // Define currentTime as a pointer to a custom time struct.
 myTM* CurrentAlarm;
 
 long* ColorValue;
 
 data* SensorData;
 
-ESP8266WebServer* SERVER;
+ESP8266WebServer* SERVER; // Define SERVER as a pointer to a WebServer object.
 
-LED* LED_STRIP;
+LED* LED_STRIP; // Define LED_STRIP as a pointer an LED object.
 
-SegmentDriver* SEGMENT;
-NTPClient* TimeClient;
+SegmentDriver* SEGMENT;// Define SEGMENT as a pointer to a SegmentDriver object.
 
-String CURRENT_COLOR = "#FFFFFF";
+NTPClient* TimeClient; // Define TimeClient as a pointer to a NTP client.
 
+String CURRENT_COLOR = "#FFFFFF"; // Global variable that is used for storing the current LED color. Default is white.
+
+// Global variables for storing the date and time
 String timeNotFormated = "";
 String dateNotFormated = "";
 
 String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-int* CurrentSong;
+int* CurrentSong; // Set up variable for selecting what song to play when the alarm rings. Default is song = 0.
 
 void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR, data* sensorData) {
   //Initializes all needed global variables and server handles
@@ -40,6 +43,7 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DH
 
   SEGMENT = display;
 
+  // Define endpoints and how to handle them
   SERVER->on("/", HTTP_GET, handleRoot);
 
   SERVER->on("/mode1", HTTP_GET, handleMode1);
@@ -67,6 +71,9 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DH
   SERVER->onNotFound(handleNotFound); //code 404
 }
 
+/*
+* This function initialises the NTP client, and sets CurrentTime to the provided time struct pointer.
+*/
 void initNTP(NTPClient* timeClient, myTM* currentTime, myTM* currentAlarm){
   TimeClient = timeClient;
   CurrentTime = currentTime;
@@ -88,24 +95,32 @@ void handleClients() {
   SERVER->handleClient();
 }
 
+/*
+* Function to connect to wifi. 
+* INPUT: String ssid, String password and a WifiMulti pointer.
+* No outputs.
+*/
 void connectToWifi(String SSID, String PASSWORD, ESP8266WiFiMulti* wifiMulti) {
 
   // Connect to WiFi network
   Serial.println();
-  wifiMulti->addAP(SSID.c_str(), PASSWORD.c_str());  // add Wi-Fi networks you want to connect to
+  wifiMulti->addAP(SSID.c_str(), PASSWORD.c_str());  // add Wi-Fi to the wifiMulti object.
 
   Serial.println();
   Serial.print("Connecting ...");
 
+  // Try to connect to the given Access Point (AP). 
+  // When the ESP has connected to the AP, the while loop is exited.
   while (wifiMulti->run() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
+  // Some debug prints
   Serial.println("");
   Serial.println("WiFi connected to ");
   Serial.println(WiFi.SSID());
   Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println(WiFi.localIP()); // The IP address is needed to access the web client
 
   if (MDNS.begin("iot")) {  // Start the mDNS responder for esp8266.local
     Serial.println("mDNS responder started");
@@ -121,43 +136,41 @@ void handleRoot() {
   SERVER->send(200, "text/html", index_html);
 }
 
+// Mode1 sets the LED to a static, predefined color.
 void handleMode1() {
-  LED_STRIP->setLEDStripHex(0xFF0000); //full red
+  LED_STRIP->setLEDStripHex(0xFF0000); // Set color to full red
   delay(10);
-  //FastLED.show();
-  SERVER->sendHeader("Location", "/");
-  SERVER->send(STATUSCODE_SEEOTHER);
+  SERVER->sendHeader("Location", "/"); // Redirect to root
+  SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
+// Mode2 sets the LED to a static, predefined color.
 void handleMode2() {
-  LED_STRIP->setLEDStripHex(0x0000FF); //full blue
+  LED_STRIP->setLEDStripHex(0x0000FF); // Set color to full red
   delay(10);
-  //FastLED.show();
-  SERVER->sendHeader("Location", "/");
-  SERVER->send(STATUSCODE_SEEOTHER);
+  SERVER->sendHeader("Location", "/"); // Redirect to root
+  SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
 void handleOff() {
-  LED_STRIP->setLEDStripHex(0x000000); //all LED off
+  LED_STRIP->setLEDStripHex(0x000000); // Set all color to black, effectively turning off the strip
   delay(40);
-  //FastLED.show();
-  SERVER->sendHeader("Location", "/");
-  SERVER->send(STATUSCODE_SEEOTHER);
+  SERVER->sendHeader("Location", "/"); // Redirect to root
+  SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
-//Displays user defined color
+// Display custom color 
 void handleStaticColor() {
-  String incomingHex = SERVER->arg("staticColor");
-  CURRENT_COLOR = incomingHex;
-  String staticColor = incomingHex.substring(1).c_str();
-  *ColorValue = hexToDec(staticColor);
+  String incomingHex = SERVER->arg("staticColor"); // Store the incoming argument in a string
+  CURRENT_COLOR = incomingHex; // Set the CURRENT_COLOR variable to the incoming color
+  String staticColor = incomingHex.substring(1).c_str(); // Remove the # from the string
+  *ColorValue = hexToDec(staticColor);// Convert from string hex to a long value
   Serial.println(staticColor);
   Serial.println(*ColorValue, HEX);
-  LED_STRIP->setLEDStripHex(*ColorValue);
+  LED_STRIP->setLEDStripHex(*ColorValue); // Set the LED strip
   delay(10);
-  //FastLED.show();
-  SERVER->sendHeader("Location", "/");
-  SERVER->send(STATUSCODE_SEEOTHER);
+  SERVER->sendHeader("Location", "/"); // Redirect to root
+  SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
 //Sets alarm to user defined time

@@ -18,14 +18,14 @@ int currentSong;
 
 int timeBeforeAlarm = 1;
 
-#define LED_PIN 4 //D2 on ESP8266
+#define LED_PIN 4  //D2 on ESP8266
 #define NUM_LEDS 5
 
 #define DIN 13  //D7 on ESP8266
 #define CLK 14  //D5 on ESP8266
 #define CS 15   //D8 on ESP8266
 
-#define DHTPIN 12 //D6 on ESP8266 
+#define DHTPIN 12  //D6 on ESP8266
 #define LDRPIN A0
 
 const int BUZZER_PIN = 5;
@@ -81,8 +81,8 @@ void setup() {
   // Start the IoT server
   startServer();
   Serial.println("Server started");
-  
-  if (display.setClock(0, 0) != 0 ){
+
+  if (display.setClock(0, 0) != 0) {
     Serial.println("Failed to display clock.");
   }
 }
