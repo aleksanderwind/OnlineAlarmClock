@@ -48,6 +48,7 @@ ESP8266WebServer webserver(80);
 ESP8266WiFiMulti wifiMulti;
 
 void setup() {
+  attachInterrupt(digitalPinToInterrupt(D1), ISR, HIGH);
   Serial.begin(115200);
   delay(10);
   Serial.println();
@@ -68,6 +69,11 @@ void setup() {
   if (display.setClock(0, 0) != 0 ){
     Serial.println("Failed to display clock.");
   }
+}
+
+void ISR()
+{
+  interrupt();
 }
 
 void loop() {
