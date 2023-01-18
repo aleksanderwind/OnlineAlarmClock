@@ -196,6 +196,7 @@ int SegmentDriver::setClock(int hour, int minute){
   // Send the final number of minute
   setChar(2, min[1]);
 
+  return 0;
 }
 
 /*
