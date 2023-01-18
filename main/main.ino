@@ -13,6 +13,8 @@ struct myTM currentTime;
 struct myTM currentAlarm;
 struct data sensorData;
 
+float lumRef = 750;
+
 long colorValue = 0;
 int currentSong;
 
@@ -65,7 +67,7 @@ void setup() {
   delay(10);
   Serial.println();
 
-  currentAlarm.inEpoch = 11673954810;
+  currentAlarm.inEpoch = 11673954810; //ignore this PLEASE
 
   initLEDInInterface(&led_strip);
 
@@ -95,6 +97,6 @@ void loop() {
   // Check if a client has connected
   handleClients();
   updateTime();
-  AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong);
-  //delay(500);
+  AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong, &sensorData, lumRef);
+  //delay(500);  
 }

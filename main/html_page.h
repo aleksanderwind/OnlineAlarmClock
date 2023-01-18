@@ -61,13 +61,13 @@ const char index_html[] PROGMEM = R"rawliteral(
         display: block;
         width: 32px;
         height: 32px;
-        border: none;
     }
     #color-picker-wrapper {
         float: left;
         border: 10px;
         border-radius: 50%;
         margin-right: 10px;
+        border: 1px solid black;
     }
 
     input[type="time"]{
@@ -97,13 +97,24 @@ const char index_html[] PROGMEM = R"rawliteral(
     }
 
     b.big {
-        font-size: 200%;
-        color: rgb(208, 255, 0);
+        font-size: 150%;
+        color: rgb(0, 0, 0);
+    }
+
+    hr.splitLine {
+        float: left;
+        height: 2px;
+        width: 400px;
+        border-width: 0;
+        color: #000000;
+        background-color: #000000;
     }
 
 </style>
 
 <body>
+    <hr class="splitLine"><br>
+    <b class="big"> LED control</b>
     <div>
         <form action="/mode1">
             <input class = mode1 type="submit" value = "Mode 1">
@@ -126,6 +137,9 @@ const char index_html[] PROGMEM = R"rawliteral(
         <input class = set type="submit" value = "Set color"> <br><br>
     </form>
 
+    <hr class="splitLine"><br>
+    <b class="big"> Alarm control</b>
+
     <div>
         <form action = "/setAlarm">
             <label for="alarmDate"> Select date for alarm: </label>
@@ -139,41 +153,45 @@ const char index_html[] PROGMEM = R"rawliteral(
     </div>
 
     <p class = "inline">Date of alarm: </p>
-    <p class = "inline" id = "dateOfAlarm"></p><br>
+    <p class = "inline" style="background-color: aqua;" id = "dateOfAlarm"></p><br>
     <p class = "inline">Time of alarm: </p>
-    <p class = "inline" id = "timeOfAlarm"></p>
+    <p class = "inline" style="background-color: aqua;" id = "timeOfAlarm"></p>
 
 
     <form action="/setWakeUpSong">
         <p>Choose wakeup song: </p>
         <input type="radio" id="song1" name="songID" value="1">
-        <label for="song1">Song 1</label>
+        <label for="song1">Pirates of the Caribbean</label>
         <input type="radio" id="song2" name="songID" value="2">
-        <label for="song2">Song 2</label>
+        <label for="song2">Crazy Frog</label> <br>
         <input type="radio" id="song3" name="songID" value="3">
-        <label for="song3">Song 3</label>
-        <input type="radio" id="song4" name="songID" value="4">
-        <label for="song4">Song 4</label>
-        <input class="set" type="submit" value="Set song"><br><br>
+        <label for="song3">Mario</label>
+        <input style="margin-left: 120px;" type="radio" id="song4" name="songID" value="4">
+        <label for="song4">Pink Panther</label>
+        <input style="margin-left: 10px;" class="set" type="submit" value="Set song"><br><br>
     </form>
 
-    <p>Current day and time</p>
+    <hr class="splitLine"><br>
+    <b class="big"> Data center</b><br>
+
+    <p class="inline">Current day and time: </p>
     <p class = "inline" id = "currentDay"></p>
     <p class = "inline">     </p>
     <p class = "inline" id = "currentHour"></p>
-    <p class = "inline">;</p>
-    <p class = "inline" id = "currentMinute"></p><br>
+    <p class = "inline">:</p>
+    <p class = "inline" id = "currentMinute"></p><br><br>
 
-    <b class = "big"> Data</b><br>
-    <p class ="inline"> Temperature: </p>
+    <p class ="inline" id="temperatureText"> Temperature: </p>
     <p class = "inline" id="temperature"></p>
     <p class ="inline"> &#x2103;</p><br>
-    <p class ="inline"> Humidity: </p>
+    <p class ="inline" id="humidText"> Humidity: </p>
     <p class = "inline" id="humidity"></p>
     <p class ="inline"> %</p><br>
     <p class ="inline"> Light level: </p>
     <p class = "inline" id="ligthLevel"></p>
-    <p class ="inline"> lm</p>
+    <p class ="inline"> lm</p><br>
+
+    <hr class="splitLine">
 
     <script>
         window.addEventListener('load', getCurrentColor);
@@ -260,7 +278,24 @@ const char index_html[] PROGMEM = R"rawliteral(
                 document.getElementById("currentMinute").innerHTML = dayHourMinuteTempHumLum[2];
                 document.getElementById("temperature").innerHTML = dayHourMinuteTempHumLum[3];
                 document.getElementById("humidity").innerHTML = dayHourMinuteTempHumLum[4];
-                document.getElementById("lightLevel").innerHTML = dayHourMinuteTempHumLum[5];
+                document.getElementById("ligthLevel").innerHTML = dayHourMinuteTempHumLum[5];
+
+                if (parseFloat(dayHourMinuteTempHumLum[3]) >= 30.0){
+                    document.getElementById("temperatureText").style.backgroundColor = "#ff0000";
+                }else if (parseFloat(dayHourMinuteTempHumLum[3]) <= 10.0){
+                    document.getElementById("temperatureText").style.backgroundColor = "#0000ff";
+                }else{
+                    document.getElementById("temperatureText").style.backgroundColor = "#00ff00";
+                }
+
+                if (parseFloat(dayHourMinuteTempHumLum[4]) >= 60.0){
+                    document.getElementById("humidText").style.backgroundColor = "#ff0000";
+                }else if (parseFloat(dayHourMinuteTempHumLum[4]) <= 40.0){
+                    document.getElementById("humidText").style.backgroundColor = "#ff0000";
+                }else{
+                    document.getElementById("humidText").style.backgroundColor = "#00ff00";
+                }
+                
                 }
             };
             xhr.open("GET", "/updatePage", true);

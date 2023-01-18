@@ -234,11 +234,11 @@ void readSensors(data* sensorData, DHTsensor* sensor){
   sensorData->lightLevel = sensor->smoothLumen();
 }
 
-void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong)
+void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong, data* SensorData, float lumRef)
 {  
   if((currentAlarm->inEpoch - currentTime->inEpoch) <= timeBeforeAlarm*60){ // X minutes before the alarm, start turning on the LED
   // brightness as sigmoid function, =0 before alarm, =1 after alarm.
-  float ledBrightness = 1.0 / (1.0 + exp(((currentAlarm->inEpoch - currentTime->inEpoch)/(timeBeforeAlarm*5.0) - 5.0))); 
+  float ledBrightness = (1.0 / (1.0 + exp(((currentAlarm->inEpoch - currentTime->inEpoch)/(timeBeforeAlarm*5.0) - 5.0)))) - (SensorData->lightLevel/lumRef); 
   //float ledBrightness = 1.0 - (1.0 / (timeBeforeAlarm*60))*(currentAlarm->inEpoch - currentTime->inEpoch);
   led_Strip->setLEDStripHex(colorValue,ledBrightness);
   /* DEBUG

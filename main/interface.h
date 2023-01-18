@@ -74,7 +74,7 @@ void initLEDInInterface(LED* strip);
 
 void readSensors(data* sensorData, DHTsensor* sensor);
 
-void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong);
+void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong, data* SensorData, float lumRef);
 
 long toEpochTime(int currentYear, int currentMonth,int currentMonthDay, int currentHour, int currentMinute);
 

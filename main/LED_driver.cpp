@@ -62,6 +62,10 @@ void LED::setLEDStrip(int r, int g, int b) {
 
   //CURRENT_COLOR = "#" + String(r, HEX) + String(g, HEX) + String(b, HEX);
 
+  r = (r<0) ? 0 : r;
+  g = (g<0) ? 0 : g;
+  b = (b<0) ? 0 : b;
+
   for (int i = 0; i < NUM_LEDS; i++) {
     STRIP->setPixelColor(i, STRIP->Color(r, g, b));
   }

@@ -23,7 +23,7 @@ SegmentDriver* SEGMENT;// Define SEGMENT as a pointer to a SegmentDriver object.
 
 NTPClient* TimeClient; // Define TimeClient as a pointer to a NTP client.
 
-String CURRENT_COLOR = "#FFFFFF"; // Global variable that is used for storing the current LED color. Default is white.
+String CURRENT_COLOR = "#000000"; // Global variable that is used for storing the current LED color. Default is black.
 
 // Global variables for storing the date and time
 String timeNotFormated = "";
@@ -237,7 +237,7 @@ void handleSetWakeUpSong() {
 //Updates time displayed on the page
 void updatePage(){
   readSensors(SensorData, sensor);
-  //Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
+  Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
   SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
 }
 
