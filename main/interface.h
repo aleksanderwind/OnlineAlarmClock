@@ -67,6 +67,7 @@ public:
   int setChar(int place, char chr, bool dot);
   int setString(String string);
   int setClock(int hour, int minute);
+  void checkTimeout(long difference, long threshold);
   void clear();
 };
 

@@ -19,6 +19,6 @@ void Play_Pirates();
 void Play_CrazyFrog();
 void Play_MarioUW();
 void Play_PinkPanther();
-void interrupt();
+void interrupt(int trigger);
 
 #endif // themes_h
