@@ -40,7 +40,7 @@ SegmentDriver::SegmentDriver(int pinDIN, int pinCLK, int pinCS) {
   }
 
   // Set brightness low value
-  if (setBrightness(15) != 0) {
+  if (setBrightness(1) != 0) {
     Serial.println("Setting brightness failed.");
   }
 
@@ -61,6 +61,15 @@ int SegmentDriver::turnOn() {
 // Turn off the display
 int SegmentDriver::turnOff() {
   return sendSPI(0, CTRL_SHUTDOWN);
+}
+
+// Turn on/off the display given threshold
+void SegmentDriver::checkTimeout(long difference, long threshold){
+  if (difference >= threshold) {
+    turnOff();
+  } else {
+    turnOn();
+  }
 }
 
 // Clear the display, by settings all eight characters to space (" ")

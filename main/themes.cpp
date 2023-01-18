@@ -244,10 +244,12 @@ void Play_Titanic()
 
 }
 
-void interrupt()
+void interrupt(int trigger)
 {
-  //Serial.println("I interrupted, SORRY!"); DEBUG
-  itr = true;
+  if (trigger >= 0) {
+    //Serial.println("I interrupted, SORRY!"); DEBUG
+    itr = true;
+  }
 }
 
 void Play_PinkPanther()

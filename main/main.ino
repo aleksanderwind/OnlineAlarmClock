@@ -11,6 +11,7 @@
 
 struct myTM currentTime;
 struct myTM currentAlarm;
+struct myTM actionTime;
 struct data sensorData;
 
 float lumRef = 750;
@@ -47,8 +48,8 @@ Adafruit_NeoPixel strip(NUM_LEDS, LED_PIN, NEO_GRB);
 
 LED led_strip(NUM_LEDS, LED_PIN, &strip);
 
-String SSID = "AndroidAP";
-String PASSWORD = "12345689";
+String SSID = "Jesper";
+String PASSWORD = "12345677";
 
 // Create an instance of the server
 ESP8266WebServer webserver(80);
@@ -58,7 +59,9 @@ ESP8266WiFiMulti wifiMulti;
 
 void ICACHE_RAM_ATTR isr()
 {
-  interrupt();
+  actionTime = currentTime;
+  Serial.println(currentAlarm.inEpoch);
+  interrupt(currentTime.inEpoch - currentAlarm.inEpoch);
 }
 
 void setup() {
@@ -78,6 +81,7 @@ void setup() {
   // init NTP to get time from a server
   initNTP(&timeClient, &currentTime, &currentAlarm);
 
+
   // Initialize the IoT server by parsing pointers to the webserver and led_strip object.
   initServer(&webserver, &led_strip, &display, &sens, &sensorData);
 
@@ -88,9 +92,15 @@ void setup() {
   startServer();
   Serial.println("Server started");
 
+
   if (display.setClock(0, 0) != 0) {
     Serial.println("Failed to display clock.");
   }
+
+  delay(1000);
+  timeClient.update();
+  actionTime.inEpoch = timeClient.getEpochTime();
+  Serial.println(actionTime.inEpoch);
 }
 
 void loop() {
@@ -102,4 +112,6 @@ void loop() {
 
   // main control of alarm
   AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong, &sensorData, lumRef);
+
+  display.checkTimeout(currentTime.inEpoch - actionTime.inEpoch, 60);
 }
