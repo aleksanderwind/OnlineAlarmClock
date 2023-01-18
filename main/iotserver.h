@@ -51,8 +51,6 @@ void getAlarmDateAndTime();
 
 void getCurrentSong();
 
-void getSensorReading();
-
 void updatePage();
 
 void updateTime();

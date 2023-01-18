@@ -70,8 +70,6 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DH
 
   SERVER->on("/updatePage", updatePage);
 
-  SERVER->on("/getSensorReading", getSensorReading);
-
   SERVER->onNotFound(handleNotFound); //code 404
 }
 
@@ -170,8 +168,12 @@ void handleStaticColor() {
   CURRENT_COLOR = incomingHex; // Set the CURRENT_COLOR variable to the incoming color
   String staticColor = incomingHex.substring(1).c_str(); // Remove the # from the string
   *ColorValue = hexToDec(staticColor);// Convert from string hex to a long value
+
+  /*
   Serial.println(staticColor);
   Serial.println(*ColorValue, HEX);
+  */
+  
   LED_STRIP->setLEDStripHex(*ColorValue); // Set the LED strip
   delay(10);
   SERVER->sendHeader("Location", "/"); // Redirect to root
@@ -237,7 +239,7 @@ void handleSetWakeUpSong() {
 //Updates time displayed on the page
 void updatePage(){
   readSensors(SensorData, sensor);
-  Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
+  //Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
   SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
 }
 
@@ -250,35 +252,6 @@ void updateTime(){
   CurrentTime->inEpoch = TimeClient->getEpochTime();
 
   SEGMENT->setClock(CurrentTime->hour, CurrentTime->minute);
-}
-
-//returns current readings from the DHT and photo sensors
-void getSensorReading()
-{
-  char tmpT[5];
-  char tmpH[5];
-  float tmpTF, tmpHF;
-  String lumen = String(sensor->smoothLumen());
-  tmpTF = sensor->smoothTempDHT();
-  tmpHF = sensor->smoothHumiDHT();
-  
-  dtostrf(tmpTF, 4, 1, tmpT);
-  dtostrf(tmpHF, 4, 1, tmpH);
-
-  /*
-  Serial.print(tmpT);
-  Serial.print("#");
-  Serial.print(tmpH);
-  Serial.print("#");
-  Serial.print(lumen);
-  */
-  
-  SERVER->send(STATUSCODE_OK, "text/plain", String(tmpT) + "#" + String(tmpH) + "#" + lumen);
-  /* Units for sensor data:
-   * Temperature (tmpT): Celcius
-   * Humidity (tmpH): Percent
-   * Light (lumen): Lumen
-   */
 }
 
 //404 error when no mathing handle is found

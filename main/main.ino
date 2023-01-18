@@ -96,7 +96,10 @@ void setup() {
 void loop() {
   // Check if a client has connected
   handleClients();
+
+  // update the clock ie. read time, load it into the struct currentTime and then update seven segment display
   updateTime();
+
+  // main control of alarm
   AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong, &sensorData, lumRef);
-  //delay(500);  
 }
