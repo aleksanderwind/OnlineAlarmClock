@@ -11,12 +11,12 @@ This project is the final project of the 3-week DTU course [34338](https://kurse
 ## List of modules
 The project is built from different individual components, which in conjunction will provide a unified solution. 
 
-### Module
+### Modules
 - Server backend
 - Temperature sensor + Photoresistor
 - 7 Segment display
 - LED strip
 - Buzzer
 
-## Structure
+### Structure
 ![test drawio](https://user-images.githubusercontent.com/39887231/213430741-237d9695-edb4-40b5-bec1-468ce13828f1.png)
