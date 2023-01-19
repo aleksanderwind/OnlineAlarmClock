@@ -57,6 +57,10 @@ ESP8266WebServer webserver(80);
 // Create an instance of the wifiMulti
 ESP8266WiFiMulti wifiMulti;
 
+/*
+Interrupt function.
+Author: AW
+*/
 void ICACHE_RAM_ATTR isr()
 {
   actionTime = currentTime;

@@ -7,7 +7,11 @@
 #include <DHT.h>
 #include "DHTsensor.h"
 
-DHTsensor::DHTsensor(int dhtPin, int ldrPin):dht(dhtPin, DHT11) //constructor for DHTsensor object, along with creating an object of the DHT class
+/*
+constructor for DHTsensor object, along with creating an object of the DHT class
+DHTsensor::DHTsensor(int dhtPin, int ldrPin):dht(dhtPin, DHT11)
+Author: AW 
+*/
 {
   Serial.println(dhtPin);
   // Parameters for smooth temp
@@ -24,6 +28,10 @@ DHTsensor::DHTsensor(int dhtPin, int ldrPin):dht(dhtPin, DHT11) //constructor fo
   ldrpin = ldrPin;
 }
 
+/*
+Initialise the dht library.
+Author: AW
+*/
 void DHTsensor::dhtBegin()
 {
   pinMode(ldrpin,INPUT);
@@ -40,6 +48,8 @@ float DHTsensor::smoothTempDHT() {
     Example:
     >>> smoothTempDHT()
     22.4
+
+    Author: MAD
   */
   float avgTmp = 0;
   
@@ -76,6 +86,8 @@ float DHTsensor::smoothHumiDHT() {
     Example:
     >>> smoothHumiDHT()
      39.0
+
+     Author: MAD
   */
 
   float avgHum;
@@ -115,6 +127,8 @@ float DHTsensor::smoothLumen(){
   Example: 
   >>> smoothLumen(A1)
     94
+
+  Author: MAD
   */
   float avgLum;
   

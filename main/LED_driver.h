@@ -1,6 +1,11 @@
 #ifndef LED_driver_h
 #define LED_driver_h
 
+/*
+Header file created by: JKT
+Authors for individual functions can be found in the LED_driver.cpp file.
+*/
+
 #include <Adafruit_NeoPixel.h>
 
 long hexToDec(String hexString);

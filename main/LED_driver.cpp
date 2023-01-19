@@ -11,6 +11,8 @@ Example:
 hexToDec("0000ff");
 
 > 255
+
+Author; JKT, AC
 */
 long hexToDec(String hexString) {
   long decValue = 0; // Initialize final value
@@ -35,6 +37,10 @@ long hexToDec(String hexString) {
   return decValue;
 }
 
+/*
+Class constructor. Takes the inputs and stores them in private variables.
+Author: JKT
+*/
 LED::LED(int num_leds, int led_pin, Adafruit_NeoPixel * strip) {
 
   NUM_LEDS = num_leds;
@@ -58,6 +64,8 @@ void LED::setLEDStrip(int r, int g, int b) {
    * setLEDStrip(255,0,0);
    * 
    * Sets the color of the LED strip to red.
+   * 
+   * Author: AC
   */
 
   //CURRENT_COLOR = "#" + String(r, HEX) + String(g, HEX) + String(b, HEX);
@@ -84,6 +92,8 @@ void LED::setLEDStripHex(long colorValue, float scaleBrightness) {
    * setLEDStrip(0xFF0000);
    * 
    * Sets the color of the LED strip to red.
+   * 
+   * Author: AC
   */
 
   int r, g, b;
@@ -94,8 +104,10 @@ void LED::setLEDStripHex(long colorValue, float scaleBrightness) {
 }
 
 
-
-
+/*
+ Clear the LED strip using the NeoPixel clear() function.
+ Author: JKT 
+*/
 void LED::clear() {
   STRIP->clear();
 }

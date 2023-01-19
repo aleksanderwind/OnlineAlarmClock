@@ -142,10 +142,19 @@ int PinkPanther_duration[] = {
 
 //###########End of Pink Panther#############//
 
+/*
+Initiate buzzer pin
+Author: AW
+*/
 void initBuzzer(int buzz_pin){
   buzzer_pin = buzz_pin;
 }
 
+/*
+Play pirates song by B.Aswinth Raj. 
+
+itr expansion by: AW
+*/
 void Play_Pirates()
 { 
   
@@ -171,6 +180,11 @@ void Play_Pirates()
 
 }
 
+/*
+Play crazy frog song by B.Aswinth Raj. 
+
+itr expansion by: AW
+*/
 void Play_CrazyFrog()
 {
 
@@ -196,6 +210,11 @@ void Play_CrazyFrog()
 
 }
 
+/*
+Play Mario theme song by B.Aswinth Raj. 
+
+itr expansion by: AW
+*/
 void Play_MarioUW()
 {
     itr = false;
@@ -220,6 +239,11 @@ void Play_MarioUW()
 
 }
 
+/*
+Play titanic theme song by B.Aswinth Raj. 
+
+itr expansion by: AW
+*/
 void Play_Titanic()
 {
     itr = false;
@@ -244,6 +268,10 @@ void Play_Titanic()
 
 }
 
+/*
+Function to call when the button interupt is triggered.
+Author: AW
+*/
 void interrupt(int trigger)
 {
   if (trigger >= 0) {
@@ -252,6 +280,11 @@ void interrupt(int trigger)
   }
 }
 
+/*
+Play Pink Panther song by B.Aswinth Raj. 
+
+itr expansion by: AW
+*/
 void Play_PinkPanther()
 {
     itr = false;

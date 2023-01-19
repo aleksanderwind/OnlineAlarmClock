@@ -1,6 +1,11 @@
 #ifndef themes_h
 #define themes_h
 
+/*
+Header file created by: JKT
+Authors for individual functions can be found in the themes.cpp file.
+*/
+
 #include "pitches.h"
 #include "Arduino.h"
 

@@ -1,6 +1,11 @@
 #ifndef DHTsensor_h
 #define DHTsensor_h
 
+/*
+Header file created by: AW
+Authors for individual functions can be found in the themes.cpp file.
+*/
+
 #include <DHT.h>
 
 struct data {

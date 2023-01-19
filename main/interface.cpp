@@ -1,8 +1,5 @@
 /*
-  Library for 7-Segment Display driver using MAX7219 IC. 
-  
-  Created Jan. 11. 2023
-  By Jesper Thøgersen
+  Interface including seven segment display, sensor readings and alarm management.
 */
 
 #include "interface.h"
@@ -17,6 +14,8 @@ Takes 4 inputs:
 pinDIN : Corresponds to DIN on the 7-segment board. Must be a vlid SPI MOSI pin. 
 pinCLK : Corresponds to CLK on the 7-segment board. Must be a valid SPI CLK pin.
 pinCS  : Corresponds to CS on the 7-segment board. Can be any digital pin.
+
+Author: JKT
 */
 SegmentDriver::SegmentDriver(int pinDIN, int pinCLK, int pinCS) {
   MOSI = pinDIN;
@@ -53,7 +52,10 @@ SegmentDriver::SegmentDriver(int pinDIN, int pinCLK, int pinCS) {
   delay(1000);
 }
 
-// Turn on the display
+/*
+Turn on the display
+Author: JKT
+*/
 int SegmentDriver::turnOn() {
   return sendSPI(1, CTRL_SHUTDOWN);
 }
@@ -72,7 +74,10 @@ void SegmentDriver::checkTimeout(long difference, long threshold){
   }
 }
 
-// Clear the display, by settings all eight characters to space (" ")
+/* 
+Clear the display, by settings all eight characters to space (" ")
+Author: JKT
+*/
 void SegmentDriver::clear() {
   for (int i = 1; i < DISPLAY_LENGTH + 1; i++) {
     setString("        ");
@@ -82,6 +87,7 @@ void SegmentDriver::clear() {
 /*
 Set the brightness of the display
 Input: value (integer between 0-15)
+Author: JKT
 */
 int SegmentDriver::setBrightness(int value) {
   if (value < 0 || value > 15) {
@@ -94,6 +100,7 @@ int SegmentDriver::setBrightness(int value) {
 /*
 Set the scan limit of the display
 Input: value (integer between 0-7)
+Author: JKT
 */
 int SegmentDriver::setScanLimit(int limit) {
   // If the given limit is not in the range of 0-7, return -1 indicating a failure.
@@ -111,6 +118,7 @@ place: integer between 0-7
 chr: any character. If the character cannot be printed (e.g. X, blank is printed)
 
 returns 0 if OK. Anything other than 0 is assumed an error. 
+Author: JKT
 */
 int SegmentDriver::setChar(int place, char chr, bool dot = false) {
 
@@ -153,6 +161,7 @@ string: A string.
 If the string is longer than 8 characters, only the first 8 characters are shown.
 
 returns 0 if OK. Anything other than 0 is assumed an error. 
+Author: JKT
 */
 int SegmentDriver::setString(String string) {
   // Check if the string is longer than 8 characters.
@@ -176,6 +185,7 @@ Inputs:
 interger hour, minute. 
 
 Hour must be in the range [0-23] and minute must be [0-59].
+Author: JKT
 */
 int SegmentDriver::setClock(int hour, int minute){  
   if (hour < 0 || hour > 23) {
@@ -216,6 +226,7 @@ instruction: a single byte representing the control mode to be used.
   (Refer to the Control Register mapping in the top of the file)
 
 returns 0 if OK. Anything other than 0 is assumed an error. 
+Author: JKT
 */
 int SegmentDriver::sendSPI(volatile byte data, volatile byte instruction) {
   // Pull CS pin low to initiate communication
@@ -233,10 +244,18 @@ int SegmentDriver::sendSPI(volatile byte data, volatile byte instruction) {
   return 0;
 }
 
+/*
+Parse LED object and store pointer
+Author: AC
+*/
 void initLEDInInterface(LED* strip){
   led_Strip = strip;
 }
 
+/*
+
+Author: AC
+*/
 void readSensors(data* sensorData, DHTsensor* sensor){
   sensorData->temperature = sensor->smoothTempDHT();
   delay(300);
@@ -244,6 +263,10 @@ void readSensors(data* sensorData, DHTsensor* sensor){
   sensorData->lightLevel = sensor->smoothLumen();
 }
 
+/*
+
+Author: MAD
+*/
 void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* currentTime, long colorValue, int currentSong, data* SensorData, float lumRef)
 {  
   if((currentAlarm->inEpoch - currentTime->inEpoch) <= timeBeforeAlarm*60){ // X minutes before the alarm, start turning on the LED
@@ -278,12 +301,12 @@ void AlarmCheck(int timeBeforeAlarm, struct myTM* currentAlarm, struct myTM* cur
     
 }
   
-
 long toEpochTime(int currentYear, int currentMonth,int currentMonthDay, int currentHour, int currentMinute){
   /* Description
   Function that converts date/time format in year/month/day/hour/minute to epoch time in seconds since 1970/01/01. 
   Input[int, int, int, int, int]: Current time in year, month, day, hour and minute.
   Output [long]: Current time in epoch time.
+  Author: MAD
   */
   setTime(currentHour,currentMinute, 0, currentMonthDay, currentMonth, currentYear); // hour,min,sec,day,month,year
   return now();

@@ -2,6 +2,7 @@
 #define html_page_h
 /*
 * Define html page and store it in flash memory.
+* Authors: AC, JKT
 */
 const char index_html[] PROGMEM = R"rawliteral(
 <html>

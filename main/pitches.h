@@ -1,6 +1,13 @@
 #ifndef pitches_h
 #define pitches_h
 
+/*
+ * These notes originate from:
+ * Author: B.Aswinth Raj
+ * Dated: 15-06-2017
+ * Website: CircuitDigest.com
+ */
+
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35

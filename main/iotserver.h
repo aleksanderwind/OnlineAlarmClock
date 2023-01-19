@@ -1,6 +1,11 @@
 #ifndef iotserver_h
 #define iotserver_h
 
+/*
+Header file created by: JKT
+Authors for individual functions can be found in the iotserver.cpp file.
+*/
+
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WiFiMulti.h>  // Include the Wi-Fi-Multi library

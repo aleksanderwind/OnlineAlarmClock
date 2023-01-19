@@ -35,8 +35,11 @@ int* CurrentSong; // Set up variable for selecting what song to play when the al
 
 int* TimeInterval;
 
+/*
+Initializes all needed global variables and server handles
+Author: JKT, AC, AW
+*/
 void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DHTsensor* SENSOR, data* sensorData) {
-  //Initializes all needed global variables and server handles
   SensorData = sensorData;
   
   sensor = SENSOR;
@@ -74,7 +77,8 @@ void initServer(ESP8266WebServer* server, LED* strip, SegmentDriver* display, DH
 }
 
 /*
-* This function initialises the NTP client, and sets CurrentTime to the provided time struct pointer.
+This function initialises the NTP client, and sets CurrentTime to the provided time struct pointer.
+Author: AC, AW
 */
 void initNTP(NTPClient* timeClient, myTM* currentTime, myTM* currentAlarm){
   TimeClient = timeClient;
@@ -84,24 +88,39 @@ void initNTP(NTPClient* timeClient, myTM* currentTime, myTM* currentAlarm){
   TimeClient->setTimeOffset(3600);
 }
 
+/*
+Initialise variables for later use
+Author: AC
+*/
 void initVars(long* colorValue, int* currentSong, int* timeInterval){
   ColorValue = colorValue;
   CurrentSong = currentSong;
   TimeInterval = timeInterval;
 }
 
+/*
+Begin the server
+Author: JKT
+*/
 void startServer() {
   SERVER->begin();
 }
 
+/*
+Handle incoming requests
+From exercises 14 and 15
+*/
 void handleClients() {
   SERVER->handleClient();
 }
 
 /*
-* Function to connect to wifi. 
-* INPUT: String ssid, String password and a WifiMulti pointer.
-* No outputs.
+Function to connect to wifi. 
+INPUT: String ssid, String password and a WifiMulti pointer.
+No outputs.
+
+Based on sample code provided in exercises 14 and 15.
+Author: JKT
 */
 void connectToWifi(String SSID, String PASSWORD, ESP8266WiFiMulti* wifiMulti) {
 
@@ -134,12 +153,18 @@ void connectToWifi(String SSID, String PASSWORD, ESP8266WiFiMulti* wifiMulti) {
   }
 }
 
-//root/index page
+/* 
+root/index page
+From exercises 14 and 15.
+*/
 void handleRoot() {
   SERVER->send(200, "text/html", index_html);
 }
 
-// Mode1 sets the LED to a static, predefined color.
+/*
+Mode1 sets the LED to a static, predefined color.
+Author: AC
+*/
 void handleMode1() {
   LED_STRIP->setLEDStripHex(0xFF0000); // Set color to full red
   delay(10);
@@ -147,7 +172,10 @@ void handleMode1() {
   SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
-// Mode2 sets the LED to a static, predefined color.
+/*
+Mode2 sets the LED to a static, predefined color.
+Author: AC
+*/
 void handleMode2() {
   LED_STRIP->setLEDStripHex(0x0000FF); // Set color to full red
   delay(10);
@@ -155,6 +183,10 @@ void handleMode2() {
   SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
+/*
+Set all LEDs to a black color.
+Author: AC
+*/
 void handleOff() {
   LED_STRIP->setLEDStripHex(0x000000); // Set all color to black, effectively turning off the strip
   delay(40);
@@ -162,7 +194,10 @@ void handleOff() {
   SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
-// Display custom color 
+/*
+Display custom color 
+Author: AC
+*/
 void handleStaticColor() {
   String incomingHex = SERVER->arg("staticColor"); // Store the incoming argument in a string
   CURRENT_COLOR = incomingHex; // Set the CURRENT_COLOR variable to the incoming color
@@ -180,7 +215,10 @@ void handleStaticColor() {
   SERVER->send(STATUSCODE_SEEOTHER); // Send redirect code
 }
 
-//Sets alarm to user defined time
+/*
+Sets alarm to user defined time
+Author: AC
+*/
 void handleSetAlarm() {
   itr = false;
   timeNotFormated = SERVER->arg("alarmTime");
@@ -212,23 +250,35 @@ void handleSetAlarm() {
   SERVER->send(303);
 }
 
-//returns currently displayed color
+/*
+returns currently displayed color
+Author: AC
+*/
 void getCurrentColor() {
   SERVER->send(STATUSCODE_OK, "text/plain", String(CURRENT_COLOR));
 }
 
-//returns time and date of currently set alarm
+/*
+returns time and date of currently set alarm
+Author: AC
+*/
 void getAlarmDateAndTime() {
   SERVER->send(STATUSCODE_OK, "text/plain", dateNotFormated + "#" + timeNotFormated + "#" + String(*TimeInterval));
   //Serial.println(dateNotFormated + "#" + timeNotFormated);
 }
 
-//returns currently playing melody
+/*
+returns currently playing melody
+Author: AC
+*/
 void getCurrentSong() {
   SERVER->send(STATUSCODE_OK, "text/plain", String(*CurrentSong));
 }
 
-//sets melody to be played to the one defined by the user
+/*
+sets melody to be played to the one defined by the user
+Author: AC
+*/
 void handleSetWakeUpSong() {
   *CurrentSong = SERVER->arg("songID").toInt();
   Serial.println(*CurrentSong);
@@ -236,14 +286,20 @@ void handleSetWakeUpSong() {
   SERVER->send(303);
 }
 
-//Updates time displayed on the page
+/*
+Updates time displayed on the page
+Author: AC
+*/
 void updatePage(){
   readSensors(SensorData, sensor);
   //Serial.println(weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
   SERVER->send(STATUSCODE_OK, "text/plain", weekDays[CurrentTime->day] + "#" + String(CurrentTime->hour) + "#" + String(CurrentTime->minute) + "#" + String(SensorData->temperature) + "#" + String(SensorData->humidity) + "#" + String(SensorData->lightLevel));
 }
 
-//Updates current time values
+/*
+Updates current time values
+Author: AC
+*/
 void updateTime(){
   TimeClient->update();
   CurrentTime->hour = TimeClient->getHours();
@@ -254,7 +310,10 @@ void updateTime(){
   SEGMENT->setClock(CurrentTime->hour, CurrentTime->minute);
 }
 
-//404 error when no mathing handle is found
+/*
+404 error when no mathing handle is found
+From exercises 14 and 15.
+*/
 void handleNotFound() {
   SERVER->send(404, "text/plain", "404: Not found");  // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
 }

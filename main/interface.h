@@ -1,6 +1,11 @@
 #ifndef interface_h
 #define interface_h
 
+/*
+Header file created by: JKT
+Authors for individual functions can be found in the interface.cpp file.
+*/
+
 #include <Arduino.h>
 #include "DHTsensor.h"
 #include "LED_driver.h"
