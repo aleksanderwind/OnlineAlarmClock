@@ -12,7 +12,7 @@ constructor for DHTsensor object, along with creating an object of the DHT class
 DHTsensor::DHTsensor(int dhtPin, int ldrPin):dht(dhtPin, DHT11)
 Author: AW 
 */
-{
+DHTsensor::DHTsensor(int dhtPin, int ldrPin):dht(dhtPin, DHT11) {
   Serial.println(dhtPin);
   // Parameters for smooth temp
   readIndexTemp = 0;
