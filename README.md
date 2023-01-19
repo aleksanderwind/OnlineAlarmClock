@@ -17,3 +17,6 @@ The project is built from different individual components, which in conjunction 
 - 7 Segment display
 - LED strip
 - Buzzer
+
+## Structure
+![test drawio](https://user-images.githubusercontent.com/39887231/213430741-237d9695-edb4-40b5-bec1-468ce13828f1.png)
