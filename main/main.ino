@@ -11,7 +11,7 @@
 
 struct myTM currentTime;
 struct myTM currentAlarm;
-struct myTM actionTime;
+struct myTM interuptTime;
 struct data sensorData;
 
 float lumRef = 750;
@@ -59,13 +59,14 @@ ESP8266WiFiMulti wifiMulti;
 
 /*
 Interrupt function.
-Author: AW
+Author: AW, (JKT)
 */
 void ICACHE_RAM_ATTR isr()
 {
-  actionTime = currentTime;
-  Serial.println(currentAlarm.inEpoch);
-  interrupt(currentTime.inEpoch - currentAlarm.inEpoch);
+  interuptTime = currentTime;
+  if (interuptTime.inEpoch - currentAlarm.inEpoch >= 0) {
+    interrupt();
+  }
 }
 
 void setup() {
@@ -101,10 +102,12 @@ void setup() {
     Serial.println("Failed to display clock.");
   }
 
-  delay(1000);
-  timeClient.update();
-  actionTime.inEpoch = timeClient.getEpochTime();
-  Serial.println(actionTime.inEpoch);
+  while (timeClient.getEpochTime() < 3700) {
+    timeClient.update();
+    delay(100);
+  }
+  interuptTime.inEpoch = timeClient.getEpochTime();
+  Serial.println(interuptTime.inEpoch);
 }
 
 void loop() {
@@ -117,5 +120,5 @@ void loop() {
   // main control of alarm
   AlarmCheck(timeBeforeAlarm, &currentAlarm, &currentTime, colorValue, currentSong, &sensorData, lumRef);
 
-  display.checkTimeout(currentTime.inEpoch - actionTime.inEpoch, 60);
+  display.checkTimeout(currentTime.inEpoch - interuptTime.inEpoch, 60);
 }

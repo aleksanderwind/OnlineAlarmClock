@@ -272,12 +272,9 @@ void Play_Titanic()
 Function to call when the button interupt is triggered.
 Author: AW
 */
-void interrupt(int trigger)
+void interrupt()
 {
-  if (trigger >= 0) {
-    //Serial.println("I interrupted, SORRY!"); DEBUG
-    itr = true;
-  }
+  itr = true;
 }
 
 /*
