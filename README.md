@@ -20,3 +20,7 @@ The project is built from different individual components, which in conjunction 
 
 ### Structure
 ![test drawio](https://user-images.githubusercontent.com/39887231/213430741-237d9695-edb4-40b5-bec1-468ce13828f1.png)
+
+### Wiring diagram
+
+![alarm_clock_diagram](https://user-images.githubusercontent.com/39887231/213870590-caa9c30d-6b15-4d00-978f-b6048575c1dd.png)
